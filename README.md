@@ -62,7 +62,7 @@
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/mianshahidofficial-png/voxcraft-studio.git
+git clone https://github.com/mianshahid-official/voxcraft-studio.git
 cd voxcraft-studio
 ```
 
