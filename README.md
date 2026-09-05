@@ -16,6 +16,12 @@
 
 </div>
 
+<div align="center">
+
+![VoxCraft Studio UI Preview](docs/screenshots/app_preview.png)
+
+</div>
+
 ---
 
 ## 🌟 Highlights
@@ -56,7 +62,7 @@
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/voxcraft-studio.git
+git clone https://github.com/mianshahidofficial-png/voxcraft-studio.git
 cd voxcraft-studio
 ```
 
