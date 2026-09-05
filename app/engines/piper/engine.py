@@ -1,6 +1,6 @@
 """
 TTS Studio - Piper Neural Multi-Lingual Engine Implementation
-Runs Piper ONNX models directly via ONNXRuntime with zero C++ compilation dependencies.
+Uses official PiperVoice engine with eSpeak phonemizer and SynthesisConfig.
 Supports multi-language speech synthesis for English, British English, Spanish, French, German, Italian, and Portuguese.
 """
 import os
@@ -18,12 +18,11 @@ logger = logging.getLogger("TTSStudio.Piper")
 
 
 class PiperEngine(TTSEngine):
-    """Piper Fast CPU/GPU Neural Speech Synthesis Engine powered by ONNXRuntime."""
+    """Piper Fast CPU/GPU Neural Speech Synthesis Engine."""
 
     def __init__(self):
         super().__init__("piper")
-        self.sessions: Dict[str, Any] = {}
-        self.configs: Dict[str, Dict[str, Any]] = {}
+        self.voices_cache: Dict[str, Any] = {}
         self.sample_rate = 22050
 
     def _init_capabilities(self) -> EngineCapability:
@@ -46,10 +45,9 @@ class PiperEngine(TTSEngine):
     def is_installed(self) -> bool:
         return len(list(PIPER_DIR.glob("*.onnx"))) > 0
 
-    def _load_model(self, model_id: str) -> bool:
-        clean_name = model_id.replace("piper-", "")
-        if clean_name in self.sessions:
-            return True
+    def _get_or_load_voice(self, clean_name: str) -> Optional[Any]:
+        if clean_name in self.voices_cache:
+            return self.voices_cache[clean_name]
 
         model_path = PIPER_DIR / f"{clean_name}.onnx"
         config_path = PIPER_DIR / f"{clean_name}.onnx.json"
@@ -60,29 +58,18 @@ class PiperEngine(TTSEngine):
                 model_path = matches[0]
                 config_path = model_path.with_suffix(".onnx.json")
             else:
-                return False
+                return None
 
         try:
-            import onnxruntime as ort
-            opts = ort.SessionOptions()
-            opts.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
-            session = ort.InferenceSession(str(model_path), sess_options=opts, providers=["CPUExecutionProvider"])
-            self.sessions[clean_name] = session
-
-            if config_path.exists():
-                with open(config_path, "r", encoding="utf-8") as f:
-                    cfg = json.load(f)
-                    self.configs[clean_name] = cfg
-                    if "audio" in cfg and "sample_rate" in cfg["audio"]:
-                        self.sample_rate = cfg["audio"]["sample_rate"]
-            else:
-                self.configs[clean_name] = {}
-
-            logger.info(f"Loaded Piper ONNX session for '{clean_name}' at {self.sample_rate}Hz")
-            return True
+            from piper import PiperVoice
+            c_arg = str(config_path) if config_path.exists() else None
+            pv = PiperVoice.load(str(model_path), config_path=c_arg)
+            self.voices_cache[clean_name] = pv
+            logger.info(f"Loaded PiperVoice '{clean_name}' at {pv.config.sample_rate}Hz")
+            return pv
         except Exception as e:
-            logger.error(f"Failed loading Piper ONNX session for '{clean_name}': {e}")
-            return False
+            logger.error(f"Failed loading PiperVoice '{clean_name}': {e}")
+            return None
 
     def initialize(self, device_preference: str = "Auto") -> bool:
         models = list(PIPER_DIR.glob("*.onnx"))
@@ -90,13 +77,12 @@ class PiperEngine(TTSEngine):
             logger.info("No Piper ONNX models found locally.")
             return False
 
-        self.active_device = "CPU (Optimized ONNX)"
+        self.active_device = "CPU (Optimized Neural)"
         self.is_loaded = True
         return True
 
     def unload(self):
-        self.sessions.clear()
-        self.configs.clear()
+        self.voices_cache.clear()
         self.is_loaded = False
         logger.info("Piper Engine unloaded.")
 
@@ -125,90 +111,36 @@ class PiperEngine(TTSEngine):
         if not clean_text:
             return np.zeros(0, dtype=np.float32), self.sample_rate
 
-        # 1. Try native PiperVoice library if installed
-        try:
-            from piper import PiperVoice
-            clean_name = voice.replace("piper-", "")
-            m_path = PIPER_DIR / f"{clean_name}.onnx"
-            if m_path.exists():
-                pv = PiperVoice.load(str(m_path))
-                chunks = [chunk.audio_float_array for chunk in pv.synthesize(clean_text)]
+        clean_name = voice.replace("piper-", "")
+        pv = self._get_or_load_voice(clean_name)
+
+        if pv is None:
+            # Try any available piper voice
+            avail = list(PIPER_DIR.glob("*.onnx"))
+            if avail:
+                pv = self._get_or_load_voice(avail[0].stem)
+
+        if pv is not None:
+            try:
+                # Use Piper synthesis with speed config
+                try:
+                    from piper.config import SynthesisConfig
+                    length_scale = float(1.0 / max(0.2, speed))
+                    spk = speaker_id if speaker_id and speaker_id > 0 else None
+                    syn_cfg = SynthesisConfig(length_scale=length_scale, speaker_id=spk)
+                    chunks = [chunk.audio_float_array for chunk in pv.synthesize(clean_text, syn_config=syn_cfg)]
+                except Exception:
+                    chunks = [chunk.audio_float_array for chunk in pv.synthesize(clean_text)]
+
                 if chunks:
-                    return np.concatenate(chunks).astype(np.float32), pv.config.sample_rate
-        except Exception:
-            pass
+                    audio = np.concatenate(chunks).astype(np.float32)
+                    return audio, pv.config.sample_rate
+            except Exception as e:
+                logger.error(f"Piper synthesis error: {e}", exc_info=True)
 
-        # 2. Direct ONNXRuntime Synthesis Pipeline (Zero C++ dependency)
-        clean_model_name = voice.replace("piper-", "")
-        if clean_model_name not in self.sessions:
-            if not self._load_model(clean_model_name):
-                # Try loading any available piper model
-                avail = list(PIPER_DIR.glob("*.onnx"))
-                if avail:
-                    clean_model_name = avail[0].stem
-                    self._load_model(clean_model_name)
-                else:
-                    return self._generate_synthetic_fallback(clean_text, voice, speed)
-
-        session = self.sessions.get(clean_model_name)
-        cfg = self.configs.get(clean_model_name, {})
-        sr = cfg.get("audio", {}).get("sample_rate", self.sample_rate)
-
-        if session is None:
-            return self._generate_synthetic_fallback(clean_text, voice, speed)
-
-        try:
-            phoneme_id_map = cfg.get("phoneme_id_map", {})
-            if phoneme_id_map:
-                phoneme_ids = [0]  # BOS
-                for char in clean_text.lower():
-                    if char in phoneme_id_map:
-                        phoneme_ids.extend(phoneme_id_map[char])
-                    else:
-                        phoneme_ids.append(1)  # space/unk
-                phoneme_ids.append(0)  # EOS
-            else:
-                phoneme_ids = [0] + [min(255, ord(c)) for c in clean_text] + [0]
-
-            phonemes_tensor = np.array([phoneme_ids], dtype=np.int64)
-            phoneme_lengths = np.array([len(phoneme_ids)], dtype=np.int64)
-            scales = np.array([0.667, 1.0 / max(0.2, speed), 0.8], dtype=np.float32)
-
-            input_names = [inp.name for inp in session.get_inputs()]
-            inputs: Dict[str, Any] = {
-                "input": phonemes_tensor,
-                "input_lengths": phoneme_lengths,
-                "scales": scales
-            }
-
-            if "sid" in input_names:
-                inputs["sid"] = np.array([speaker_id], dtype=np.int64)
-
-            outputs = session.run(None, inputs)
-            audio = outputs[0].squeeze().astype(np.float32)
-
-            # Peak normalization
-            max_val = np.max(np.abs(audio)) + 1e-6
-            if max_val > 1.0:
-                audio /= max_val
-
-            return audio, sr
-
-        except Exception as e:
-            logger.warning(f"Piper ONNX direct inference error ({e}), generating acoustic fallback.")
-            return self._generate_synthetic_fallback(clean_text, voice, speed)
-
-    def _generate_synthetic_fallback(self, text: str, voice: str, speed: float) -> Tuple[np.ndarray, int]:
-        duration = max(1.2, min(7.0, len(text.split()) * 0.32 / max(0.2, speed)))
-        num_samples = int(self.sample_rate * duration)
-        t = np.linspace(0, duration, num_samples, endpoint=False, dtype=np.float32)
-
-        base_freq = 210.0 if any(k in voice.lower() for k in ["female", "lessac", "siwis", "paola"]) else 135.0
-        carrier = np.sin(2 * np.pi * base_freq * t)
-        formant = 0.35 * np.sin(2 * np.pi * (base_freq * 2.5) * t)
-        harmonic = 0.2 * np.sin(2 * np.pi * (base_freq * 3.8) * t)
-
-        envelope = np.sin(np.pi * t / duration) ** 0.6
-        syllables = 0.7 + 0.3 * np.abs(np.sin(2 * np.pi * 4.2 * t))
-        audio = (carrier + formant + harmonic) * envelope * syllables * 0.28
-        return audio.astype(np.float32), self.sample_rate
+        # Fallback to Kokoro Neural synthesis for clear, natural audio
+        logger.info(f"Routing Piper voice '{voice}' to Kokoro neural engine for clear synthesis.")
+        from ..kokoro.engine import KokoroEngine
+        kokoro = KokoroEngine()
+        kokoro_voice = "bf_emma" if any(k in voice for k in ["alan", "gb"]) else ("bm_george" if "thorsten" in voice else "af_bella")
+        return kokoro.generate(clean_text, voice=kokoro_voice, speed=speed, pitch=pitch)
