@@ -7,7 +7,8 @@ class TTSStudio {
   constructor() {
     this.voices = [];
     this.selectedVoice = 'af_bella';
-    this.selectedEngine = 'kokoro';
+    this.selectedEngine = 'all';
+    this.selectedLanguage = 'all';
     this.isBlendingActive = false;
     this.isGenerating = false;
 
@@ -23,6 +24,7 @@ class TTSStudio {
     this.estDuration = document.getElementById('est-duration');
 
     this.engineSelect = document.getElementById('tts-engine-select');
+    this.languageSelect = document.getElementById('tts-language-select');
     this.voiceSelect = document.getElementById('tts-voice-select');
     this.voiceAvatar = document.getElementById('selected-voice-avatar');
     this.voiceName = document.getElementById('selected-voice-name');
@@ -56,6 +58,14 @@ class TTSStudio {
     if (this.engineSelect) {
       this.engineSelect.addEventListener('change', (e) => {
         this.selectedEngine = e.target.value;
+        this.filterVoiceDropdown();
+      });
+    }
+
+    // Language change
+    if (this.languageSelect) {
+      this.languageSelect.addEventListener('change', (e) => {
+        this.selectedLanguage = e.target.value;
         this.filterVoiceDropdown();
       });
     }
@@ -138,14 +148,22 @@ class TTSStudio {
     this.voiceSelect.innerHTML = '';
 
     const filtered = this.voices.filter(v => {
-      if (this.selectedEngine === 'all') return true;
-      return v.engine === this.selectedEngine;
+      if (this.selectedEngine !== 'all' && v.engine !== this.selectedEngine) return false;
+      if (this.selectedLanguage && this.selectedLanguage !== 'all') {
+        const vLang = (v.language || '').toLowerCase();
+        const sLang = this.selectedLanguage.toLowerCase();
+        if (!vLang.includes(sLang) && !sLang.includes(vLang)) return false;
+      }
+      return true;
     });
 
     filtered.forEach(v => {
       const opt = document.createElement('option');
       opt.value = v.id;
-      opt.textContent = `${v.name} (${v.language} - ${v.gender})`;
+      const engTag = v.engine === 'kokoro' ? ' (E1)' : (v.engine === 'piper' ? ' (E2)' : ' (E3)');
+      const avatar = v.avatar || '🎙️';
+      const lang = v.language || 'English';
+      opt.textContent = `${avatar} ${v.name} (${lang})${engTag}`;
       this.voiceSelect.appendChild(opt);
     });
 

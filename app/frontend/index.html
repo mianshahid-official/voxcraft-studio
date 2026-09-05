@@ -143,10 +143,26 @@
             <div>
               <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">TTS Model Engine</label>
               <select id="tts-engine-select" class="custom-select">
-                <option value="kokoro">Kokoro-82M (ONNX 24kHz Studio Fast)</option>
-                <option value="piper">Piper Neural TTS (Multi-Lingual 40+ Langs)</option>
-                <option value="f5_tts">F5-TTS (Zero-Shot Voice Cloning)</option>
-                <option value="all">All Available Engines</option>
+                <option value="all">All Engines (Auto-Select)</option>
+                <option value="kokoro">Engine 1: Kokoro-82M (Studio Quality)</option>
+                <option value="piper">Engine 2: Piper Neural (Multi-Lingual)</option>
+                <option value="f5_tts">Engine 3: F5-TTS (Voice Cloning)</option>
+              </select>
+            </div>
+
+            <!-- Language Filter Dropdown -->
+            <div>
+              <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Spoken Language</label>
+              <select id="tts-language-select" class="custom-select">
+                <option value="all">All Languages</option>
+                <option value="English">English</option>
+                <option value="British English">British English</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+                <option value="Italian">Italian</option>
+                <option value="Portuguese">Portuguese</option>
+                <option value="Multi-Lingual">Multi-Lingual</option>
               </select>
             </div>
 
