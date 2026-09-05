@@ -1,0 +1,7 @@
+1
+00:00:00,000 --> 00:00:01,490
+[Alex] Hello and welcome.
+
+2
+00:00:01,890 --> 00:00:04,110
+[Sarah] Glad to be here testing speech synthesis.

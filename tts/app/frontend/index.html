@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VoxCraft Studio — Offline Neural TTS & Podcast Engine</title>
+  <meta name="description" content="State-of-the-art offline desktop speech synthesis studio powered by Kokoro, Piper, and F5-TTS with GPU acceleration, voice blending, and podcast multi-speaker mode.">
+  <link rel="stylesheet" href="css/design_system.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/studio.css">
+</head>
+<body>
+  <div class="ambient-glow-1"></div>
+  <div class="ambient-glow-2"></div>
+
+  <div id="app-container">
+    <!-- =========================================================
+         Left Sidebar Navigation
+         ========================================================= -->
+    <aside id="sidebar">
+      <div>
+        <div class="brand-header">
+          <div class="brand-logo-icon">🎙️</div>
+          <div>
+            <div class="brand-title">VoxCraft</div>
+            <div class="brand-subtitle">Studio TTS v1.0</div>
+          </div>
+        </div>
+
+        <nav class="nav-menu">
+          <div class="nav-item active" data-view="studio" id="nav-studio">
+            <span class="nav-item-icon">⚡</span>
+            <span>Studio TTS</span>
+          </div>
+          <div class="nav-item" data-view="podcast" id="nav-podcast">
+            <span class="nav-item-icon">📻</span>
+            <span>Podcast Studio</span>
+            <span class="badge badge-gpu" style="margin-left: auto; font-size: 0.68rem;">Multi</span>
+          </div>
+          <div class="nav-item" data-view="voices" id="nav-voices">
+            <span class="nav-item-icon">🎭</span>
+            <span>Voice Library</span>
+          </div>
+          <div class="nav-item" data-view="cloning" id="nav-cloning">
+            <span class="nav-item-icon">🧬</span>
+            <span>Voice Cloning (F5)</span>
+          </div>
+          <div class="nav-item" data-view="effects" id="nav-effects">
+            <span class="nav-item-icon">🎚️</span>
+            <span>DSP & Audio FX</span>
+          </div>
+          <div class="nav-item" data-view="models" id="nav-models">
+            <span class="nav-item-icon">⚙️</span>
+            <span>Model Hub</span>
+          </div>
+          <div class="nav-item" data-view="history" id="nav-history">
+            <span class="nav-item-icon">📜</span>
+            <span>History</span>
+          </div>
+        </nav>
+      </div>
+
+      <!-- Sidebar Hardware HUD -->
+      <div class="sidebar-hardware-hud">
+        <div class="hardware-hud-row">
+          <span>Engine Status:</span>
+          <span style="display: flex; align-items: center; gap: 6px;">
+            <span class="status-dot active"></span>
+            <span class="hardware-val" style="color: #10b981;">Ready</span>
+          </span>
+        </div>
+        <div class="hardware-hud-row">
+          <span>Accelerator:</span>
+          <span class="hardware-val" id="sidebar-gpu-val">Detecting...</span>
+        </div>
+        <div class="hardware-hud-row">
+          <span>Memory:</span>
+          <span class="hardware-val" id="sidebar-ram-val">Checking...</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- =========================================================
+         Main Application Workspace
+         ========================================================= -->
+    <main id="main-content">
+      <!-- Top Application Header -->
+      <header class="top-header">
+        <h1 class="top-header-title" id="current-view-title">
+          🎙️ Studio TTS Generator
+        </h1>
+        <div class="top-header-actions">
+          <span class="badge badge-gpu" id="hud-active-device">GPU / CPU Detection</span>
+          <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.85rem;" id="btn-refresh-models" title="Refresh System Status">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            <span>Diagnostics</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- -------------------------------------------------------
+           VIEW 1: Studio TTS Generator
+           ------------------------------------------------------- -->
+      <div class="view-container active" id="view-studio">
+        <div class="studio-grid">
+          <!-- Text Input Editor Panel -->
+          <div class="editor-card glass-panel">
+            <div class="editor-header">
+              <span style="font-weight: 700; font-size: 1.1rem;">Text Prompt</span>
+              <div class="segmented-control">
+                <button class="segmented-btn active">Standard</button>
+                <button class="segmented-btn">SSML</button>
+              </div>
+            </div>
+
+            <textarea id="tts-text-input" class="textarea-field" placeholder="Type or paste text here to synthesize speech offline...">VoxCraft Studio brings studio-quality neural speech synthesis directly to your desktop. Operating 100% offline with zero cloud latency.</textarea>
+
+            <!-- Quick Sample Prompts -->
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+              <span style="font-size: 0.8rem; color: var(--text-muted);">Quick Prompts:</span>
+              <button class="badge quick-sample-chip" data-sample="Welcome back to the podcast! Today we are exploring the frontiers of offline machine learning and high fidelity audio generation.">🎙️ Podcast Intro</button>
+              <button class="badge quick-sample-chip" data-sample="Deep beneath the ancient city walls, forgotten circuits flickered to life, whispering echoes of a lost civilization.">📖 Sci-Fi Story</button>
+              <button class="badge quick-sample-chip" data-sample="Attention: The local neural models have been initialized. All operations are running with optimal hardware acceleration.">⚡ Tech Announcement</button>
+            </div>
+
+            <div class="editor-footer">
+              <div style="display: flex; gap: 14px;">
+                <span id="char-count">135 chars</span>
+                <span>•</span>
+                <span id="word-count">20 words</span>
+                <span>•</span>
+                <span id="est-duration">~8.0s</span>
+              </div>
+              <span style="color: #06b6d4; font-family: var(--font-mono); font-size: 0.78rem;">Ctrl + Enter to Generate</span>
+            </div>
+          </div>
+
+          <!-- Controls & Voice Settings Panel -->
+          <div class="controls-card glass-panel">
+            <span style="font-weight: 700; font-size: 1.1rem;">Voice & Synthesis Engine</span>
+
+            <!-- Engine Selector -->
+            <div>
+              <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">TTS Model Engine</label>
+              <select id="tts-engine-select" class="custom-select">
+                <option value="kokoro">Kokoro-82M (ONNX 24kHz Studio Fast)</option>
+                <option value="piper">Piper Neural TTS (Multi-Lingual 40+ Langs)</option>
+                <option value="f5_tts">F5-TTS (Zero-Shot Voice Cloning)</option>
+                <option value="all">All Available Engines</option>
+              </select>
+            </div>
+
+            <!-- Voice Selector -->
+            <div>
+              <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Speaker Voice</label>
+              <select id="tts-voice-select" class="custom-select"></select>
+            </div>
+
+            <!-- Selected Voice Preview Card -->
+            <div class="voice-preview-card">
+              <div class="voice-avatar-lg" id="selected-voice-avatar">🎙️</div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 700; font-size: 1rem; color: #ffffff;" id="selected-voice-name">Bella</div>
+                <div style="font-size: 0.82rem; color: #94a3b8;" id="selected-voice-style">English (US) • Podcast Host</div>
+              </div>
+            </div>
+
+            <!-- Sliders: Speed & Pitch & Volume -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <span>Speaking Rate / Speed</span>
+                <span class="slider-val" id="tts-speed-val">1.00x</span>
+              </div>
+              <input type="range" id="tts-speed-slider" class="custom-slider" min="0.5" max="2.0" step="0.05" value="1.0">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-header">
+                <span>Pitch Shift</span>
+                <span class="slider-val" id="tts-pitch-val">0.0 st</span>
+              </div>
+              <input type="range" id="tts-pitch-slider" class="custom-slider" min="-8" max="8" step="0.5" value="0.0">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-header">
+                <span>Output Volume</span>
+                <span class="slider-val" id="tts-volume-val">100%</span>
+              </div>
+              <input type="range" id="tts-volume-slider" class="custom-slider" min="0.2" max="2.0" step="0.05" value="1.0">
+            </div>
+
+            <!-- Voice Blending Accordion -->
+            <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px;">
+              <label style="display: flex; align-items: center; justify-content: space-between; cursor: pointer;">
+                <span style="font-weight: 600; font-size: 0.9rem; color: #c4b5fd;">🧬 Multi-Voice Blending (Kokoro)</span>
+                <input type="checkbox" id="blend-toggle" style="accent-color: var(--accent-primary); width: 16px; height: 16px;">
+              </label>
+
+              <div id="blend-controls-container" style="display: none; flex-direction: column; gap: 10px; margin-top: 12px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                  <div>
+                    <label style="font-size: 0.78rem; color: #94a3b8;">Voice A</label>
+                    <select id="blend-voice-a" class="custom-select" style="padding: 6px 10px; font-size: 0.85rem;"></select>
+                  </div>
+                  <div>
+                    <label style="font-size: 0.78rem; color: #94a3b8;">Voice B</label>
+                    <select id="blend-voice-b" class="custom-select" style="padding: 6px 10px; font-size: 0.85rem;"></select>
+                  </div>
+                </div>
+                <div class="slider-group">
+                  <div class="slider-header">
+                    <span>Blend Ratio</span>
+                    <span class="slider-val" id="blend-ratio-val">50% A / 50% B</span>
+                  </div>
+                  <input type="range" id="blend-ratio-slider" class="custom-slider" min="0" max="1" step="0.05" value="0.5">
+                </div>
+              </div>
+            </div>
+
+            <!-- Synthesize Button -->
+            <button class="btn btn-primary" id="btn-generate-tts" style="width: 100%; padding: 14px; font-size: 1.05rem;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span>Generate Speech</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- -------------------------------------------------------
+           VIEW 2: Podcast & Multi-Speaker Studio
+           ------------------------------------------------------- -->
+      <div class="view-container" id="view-podcast">
+        <div class="podcast-container">
+          <!-- Cast & Template Controls -->
+          <div class="glass-panel" style="padding: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-md);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h3 style="font-size: 1.15rem;">Episode Cast & Characters</h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary);">Assign unique voices, rates, and pitch offsets to each participant.</p>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <label style="font-size: 0.85rem; color: #94a3b8;">Template:</label>
+                <select id="podcast-template-select" class="custom-select" style="width: 200px; padding: 6px 12px; font-size: 0.85rem;">
+                  <option value="tech_interview">Tech Interview (Host & Guest)</option>
+                  <option value="story_intro">Dramatic Story Intro (3 Cast)</option>
+                </select>
+                <button class="btn btn-primary" id="btn-generate-podcast">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                  <span>Generate Full Podcast</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="cast-row" id="podcast-cast-container"></div>
+          </div>
+
+          <!-- Dialogue Script Editor -->
+          <div class="glass-panel" style="padding: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-md);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h3 style="font-size: 1.15rem;">Dialogue Script Timeline</h3>
+              <button class="btn btn-secondary" id="btn-add-turn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Add Dialogue Block</span>
+              </button>
+            </div>
+
+            <div class="dialogue-timeline" id="podcast-dialogue-container"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- -------------------------------------------------------
+           VIEW 3: Voice Explorer & Library
+           ------------------------------------------------------- -->
+      <div class="view-container" id="view-voices">
+        <div class="glass-panel" style="padding: var(--space-lg); display: flex; flex-direction: column; gap: var(--space-md);">
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1.5fr; gap: 14px;">
+            <div>
+              <label style="font-size: 0.78rem; color: #94a3b8; display: block; margin-bottom: 4px;">Engine</label>
+              <select id="filter-engine" class="custom-select">
+                <option value="all">All Engines</option>
+                <option value="kokoro">Kokoro-82M (ONNX)</option>
+                <option value="piper">Piper Neural</option>
+                <option value="f5_tts">F5-TTS Cloning</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 0.78rem; color: #94a3b8; display: block; margin-bottom: 4px;">Gender</label>
+              <select id="filter-gender" class="custom-select">
+                <option value="all">All Genders</option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 0.78rem; color: #94a3b8; display: block; margin-bottom: 4px;">Language</label>
+              <select id="filter-language" class="custom-select">
+                <option value="all">All Languages</option>
+                <option value="English">English</option>
+                <option value="Japanese">Japanese</option>
+                <option value="Mandarin">Mandarin</option>
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 0.78rem; color: #94a3b8; display: block; margin-bottom: 4px;">Search Voices</label>
+              <input type="text" id="search-voices-input" class="input-field" placeholder="Search by name, style, or tag...">
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 6px;">
+            <span id="voice-count-label" style="font-size: 0.88rem; color: #94a3b8; font-family: var(--font-mono);">Loading catalog...</span>
+          </div>
+        </div>
+
+        <div class="voice-grid" id="voice-cards-grid"></div>
+      </div>
+
+      <!-- -------------------------------------------------------
+           VIEW 4: F5-TTS Voice Cloning Lab
+           ------------------------------------------------------- -->
+      <div class="view-container" id="view-cloning">
+        <div style="max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--space-xl);">
+          <div class="glass-panel" style="padding: var(--space-xl); display: flex; flex-direction: column; gap: var(--space-lg);">
+            <div>
+              <h2 style="font-size: 1.4rem;">🧬 Zero-Shot Voice Cloning Lab</h2>
+              <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px;">
+                Clone any speaker with only 5 to 15 seconds of clean reference audio using F5-TTS Flow Matching diffusion.
+              </p>
+            </div>
+
+            <!-- Upload / Sample Selector -->
+            <div style="border: 2px dashed rgba(255,255,255,0.15); border-radius: var(--radius-lg); padding: 32px; text-align: center; background: rgba(0,0,0,0.25);">
+              <div style="font-size: 2.5rem; margin-bottom: 8px;">🎙️</div>
+              <div style="font-weight: 600; color: #fff; font-size: 1.05rem;">Upload Reference Voice File (.WAV or .MP3)</div>
+              <div style="font-size: 0.85rem; color: #94a3b8; margin: 6px 0 16px;">Recommended duration: 5-15 seconds of clear, noise-free speech.</div>
+              <input type="file" id="clone-audio-file" accept="audio/wav,audio/mp3" style="display: none;">
+              <button class="btn btn-secondary" onclick="document.getElementById('clone-audio-file').click()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span>Select Audio Sample</span>
+              </button>
+            </div>
+
+            <div>
+              <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Reference Audio Transcript (What was spoken in the audio file)</label>
+              <input type="text" id="clone-ref-text" class="input-field" placeholder="e.g., Welcome to the future of voice technology.">
+            </div>
+
+            <div>
+              <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; display: block;">Target Speech to Synthesize in Cloned Voice</label>
+              <textarea id="clone-target-text" class="textarea-field" placeholder="Type what you want the cloned voice to say..."></textarea>
+            </div>
+
+            <button class="btn btn-cyan" id="btn-run-clone" style="padding: 14px; font-size: 1rem;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor"></polygon></svg>
+              <span>Clone Voice & Synthesize</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- -------------------------------------------------------
+           VIEW 5: Master DSP & Audio Effects
+           ------------------------------------------------------- -->
+      <div class="view-container" id="view-effects">
+        <div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--space-xl);">
+          <div class="glass-panel" style="padding: var(--space-xl); display: flex; flex-direction: column; gap: var(--space-lg);">
+            <div>
+              <h2 style="font-size: 1.35rem;">🎚️ Studio DSP Audio Processor</h2>
+              <p style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px;">
+                Fine-tune acoustic warmth, equalization, studio room simulation, and loudness standards.
+              </p>
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-header">
+                <span>Bass Warmth (250Hz Shelf)</span>
+                <span class="slider-val" id="fx-bass-val">0.0 dB</span>
+              </div>
+              <input type="range" id="fx-bass-slider" class="custom-slider" min="-6" max="6" step="0.5" value="0.0">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-header">
+                <span>Treble Clarity (4000Hz Shelf)</span>
+                <span class="slider-val" id="fx-treble-val">0.0 dB</span>
+              </div>
+              <input type="range" id="fx-treble-slider" class="custom-slider" min="-6" max="6" step="0.5" value="0.0">
+            </div>
+
+            <div class="slider-group">
+              <div class="slider-header">
+                <span>Room Acoustic Reverb</span>
+                <span class="slider-val" id="fx-reverb-val">0.00</span>
+              </div>
+              <input type="range" id="fx-reverb-slider" class="custom-slider" min="0" max="0.8" step="0.05" value="0.0">
+            </div>
+
+            <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px; display: flex; align-items: center; justify-content: space-between;">
+              <div>
+                <div style="font-weight: 600; font-size: 0.95rem; color: #fff;">Podcast Loudness Normalization</div>
+                <div style="font-size: 0.8rem; color: #94a3b8;">Normalizes peak gain to broadcast standards (-1.0 dBFS / -14 LUFS).</div>
+              </div>
+              <input type="checkbox" id="fx-normalize-toggle" checked style="accent-color: var(--accent-primary); width: 18px; height: 18px;">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- -------------------------------------------------------
+           VIEW 6: Model Hub & Diagnostics
+           ------------------------------------------------------- -->
+      <div class="view-container" id="view-models">
+        <div style="display: flex; flex-direction: column; gap: var(--space-xl);">
+          <!-- Diagnostics HUD Card -->
+          <div class="glass-panel" style="padding: var(--space-xl);">
+            <h2 style="font-size: 1.25rem; margin-bottom: var(--space-md);">🖥️ System & Hardware Acceleration Diagnostics</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+              <div style="background: rgba(0,0,0,0.3); padding: 14px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.06);">
+                <div style="font-size: 0.78rem; color: #94a3b8;">Primary CPU</div>
+                <div style="font-weight: 700; font-size: 0.95rem; color: #fff; margin-top: 4px;" id="hud-cpu-info">Loading...</div>
+              </div>
+              <div style="background: rgba(0,0,0,0.3); padding: 14px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.06);">
+                <div style="font-size: 0.78rem; color: #94a3b8;">System RAM</div>
+                <div style="font-weight: 700; font-size: 0.95rem; color: #fff; margin-top: 4px;" id="hud-ram-info">Loading...</div>
+              </div>
+              <div style="background: rgba(0,0,0,0.3); padding: 14px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.06);">
+                <div style="font-size: 0.78rem; color: #94a3b8;">Free Disk Storage</div>
+                <div style="font-weight: 700; font-size: 0.95rem; color: #fff; margin-top: 4px;" id="hud-disk-info">Loading...</div>
+              </div>
+              <div style="background: rgba(0,0,0,0.3); padding: 14px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.06);">
+                <div style="font-size: 0.78rem; color: #94a3b8;">Hardware GPU / DirectML</div>
+                <div style="font-weight: 700; font-size: 0.95rem; color: #8b5cf6; margin-top: 4px;" id="hud-gpu-details">Checking...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Model Download Manifest -->
+          <div>
+            <h2 style="font-size: 1.25rem;">📦 Offline Model Downloader & Packages</h2>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px;">
+              Download neural models once during setup. After downloading, VoxCraft Studio works 100% offline without internet.
+            </p>
+            <div class="model-hub-grid" id="model-manifest-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- -------------------------------------------------------
+           VIEW 7: History & Drafts
+           ------------------------------------------------------- -->
+      <div class="view-container" id="view-history">
+        <div class="glass-panel" style="padding: var(--space-xl);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
+            <div>
+              <h2 style="font-size: 1.25rem;">📜 Audio Generation History</h2>
+              <p style="font-size: 0.85rem; color: var(--text-secondary);">Review, replay, and export recent offline speech synthesis clips.</p>
+            </div>
+            <button class="btn btn-secondary" id="btn-clear-history" style="color: #f43f5e;">Clear History</button>
+          </div>
+          <div id="history-items-list"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- =========================================================
+         Bottom Floating Waveform Audio Player Bar
+         ========================================================= -->
+    <footer id="bottom-player">
+      <!-- Left: Track Metadata -->
+      <div class="player-track-info">
+        <button class="btn-primary" id="player-play-btn" style="width: 44px; height: 44px; border-radius: 50%; padding: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" title="Play / Pause (Space)">
+          <span id="player-play-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          </span>
+        </button>
+        <div style="min-width: 0;">
+          <div id="player-track-title" style="font-weight: 700; font-size: 0.92rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">No Audio Loaded</div>
+          <div id="player-track-subtitle" style="font-size: 0.76rem; color: #94a3b8; font-family: var(--font-mono);">Synthesize speech to play</div>
+        </div>
+      </div>
+
+      <!-- Middle: Dynamic Waveform Scrubber & Timer -->
+      <div class="player-wave-container">
+        <canvas id="waveform-canvas"></canvas>
+        <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: #94a3b8; font-family: var(--font-mono);">
+          <span id="player-time-display">0:00 / 0:00</span>
+          <span>Click waveform to scrub</span>
+        </div>
+      </div>
+
+      <!-- Right: Playback Controls & Exporter -->
+      <div class="player-controls-right">
+        <!-- Playback Rate -->
+        <select id="player-rate-select" class="custom-select" style="width: 75px; padding: 4px 6px; font-size: 0.78rem;">
+          <option value="0.75">0.75x</option>
+          <option value="1.0" selected>1.0x</option>
+          <option value="1.25">1.25x</option>
+          <option value="1.5">1.5x</option>
+          <option value="2.0">2.0x</option>
+        </select>
+
+        <!-- Volume -->
+        <div style="display: flex; align-items: center; gap: 6px; width: 90px;">
+          <span style="font-size: 0.85rem; color: #94a3b8;">🔊</span>
+          <input type="range" id="player-volume-slider" class="custom-slider" min="0" max="1" step="0.05" value="1.0">
+        </div>
+
+        <!-- Export Audio Button -->
+        <button class="btn btn-secondary" id="player-export-btn" style="padding: 6px 12px; font-size: 0.82rem;" title="Export Master Audio">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Export</span>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- =========================================================
+       Modals & Toast Containers
+       ========================================================= -->
+  <!-- Export Modal -->
+  <div class="modal-overlay" id="export-modal">
+    <div class="modal-card">
+      <h3 style="font-size: 1.25rem; margin-bottom: 8px;">💾 Export Synthesized Audio</h3>
+      <p style="font-size: 0.86rem; color: var(--text-secondary); margin-bottom: 16px;">
+        Save audio file directly to your local exports directory.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label style="font-size: 0.82rem; color: #94a3b8; display: block; margin-bottom: 4px;">File Name</label>
+          <input type="text" id="export-filename-input" class="input-field" value="voxcraft_audio">
+        </div>
+
+        <div>
+          <label style="font-size: 0.82rem; color: #94a3b8; display: block; margin-bottom: 4px;">Audio Format</label>
+          <select id="export-format-select" class="custom-select">
+            <option value="wav">WAV (Lossless 16-bit PCM)</option>
+            <option value="mp3">MP3 (High Quality 320kbps)</option>
+            <option value="flac">FLAC (Lossless Compressed)</option>
+            <option value="ogg">OGG Vorbis</option>
+          </select>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+          <button class="btn btn-secondary" id="btn-export-cancel">Cancel</button>
+          <button class="btn btn-primary" id="btn-export-confirm">Save Audio</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification HUD -->
+  <div id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/api.js"></script>
+  <script src="js/audio_player.js"></script>
+  <script src="js/tts_studio.js"></script>
+  <script src="js/podcast_studio.js"></script>
+  <script src="js/voice_explorer.js"></script>
+  <script src="js/model_manager.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

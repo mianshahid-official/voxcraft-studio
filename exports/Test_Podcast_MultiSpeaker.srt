@@ -1,0 +1,15 @@
+1
+00:00:00,000 --> 00:00:03,800
+[Narrator] Welcome to the VoxCraft Studio Showcase episode.
+
+2
+00:00:04,200 --> 00:00:08,570
+[Alex (Host)] Today we are testing our brand new multi-speaker podcast engine.
+
+3
+00:00:08,970 --> 00:00:13,620
+[Dr. Elena (Guest)] Every single speaker now has their own custom rate, pitch, and voice profile.
+
+4
+00:00:14,020 --> 00:00:17,030
+[Alex (Host)] Synthesized completely offline on your desktop!

@@ -1,0 +1,29 @@
+[
+  {
+    "index": 1,
+    "chunk_id": "chunk_0001",
+    "text": "this is the text in the box i have",
+    "start_sec": 0.0,
+    "end_sec": 0.68,
+    "duration_sec": 0.68,
+    "chapter": "Chapter 1"
+  },
+  {
+    "index": 2,
+    "chunk_id": "chunk_0002",
+    "text": "VoxCraft Studio brings studio-quality neural speech synthesis directly to your desktop. Operating 100% offline with zero cloud latency.",
+    "start_sec": 1.43,
+    "end_sec": 4.87,
+    "duration_sec": 3.44,
+    "chapter": "Chapter 1"
+  },
+  {
+    "index": 3,
+    "chunk_id": "chunk_0003",
+    "text": "but its converting some random 3second clip i dont know from where",
+    "start_sec": 5.62,
+    "end_sec": 7.65,
+    "duration_sec": 2.03,
+    "chapter": "Chapter 1"
+  }
+]

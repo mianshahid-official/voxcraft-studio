@@ -1,0 +1,25 @@
+2026-09-05 00:06:14,522 [INFO] TTSStudio.Kokoro: Kokoro model files not found locally.
+2026-09-05 00:06:57,542 [INFO] TTSStudio.Piper: Loaded 1 Piper models.
+2026-09-05 00:08:01,671 [INFO] TTSStudio.Piper: Loaded 1 Piper models.
+2026-09-05 00:19:08,778 [INFO] TTSStudio.Piper: Loaded 3 Piper models.
+2026-09-05 00:25:57,693 [INFO] TTSStudio.Piper: Loaded 3 Piper models.
+2026-09-05 00:26:44,833 [INFO] TTSStudio.F5TTS: F5-TTS model checkpoint not found locally.
+2026-09-05 00:26:44,840 [INFO] TTSStudio.F5TTS: F5-TTS model checkpoint not found locally.
+2026-09-05 00:26:44,849 [INFO] TTSStudio.F5TTS: F5-TTS model checkpoint not found locally.
+2026-09-05 00:26:58,042 [INFO] TTSStudio.Kokoro: Loading Kokoro with providers: ['CPUExecutionProvider']
+2026-09-05 00:26:59,948 [INFO] TTSStudio.Kokoro: Kokoro Engine initialized on CPU (Multi-Threaded)
+2026-09-05 00:27:00,198 [WARNING] phonemizer: words count mismatch on 100.0% of the lines (1/1)
+2026-09-05 00:27:02,661 [WARNING] phonemizer: words count mismatch on 200.0% of the lines (2/1)
+2026-09-05 00:27:10,342 [WARNING] phonemizer: words count mismatch on 100.0% of the lines (1/1)
+2026-09-05 00:27:49,379 [WARNING] phonemizer: words count mismatch on 100.0% of the lines (1/1)
+2026-09-05 00:27:50,856 [WARNING] phonemizer: words count mismatch on 200.0% of the lines (2/1)
+2026-09-05 00:27:55,784 [WARNING] phonemizer: words count mismatch on 100.0% of the lines (1/1)
+2026-09-05 01:06:16,394 [INFO] TTSStudio.F5TTS: F5-TTS model checkpoint not found locally.
+2026-09-05 01:06:23,614 [INFO] TTSStudio.F5TTS: F5-TTS model checkpoint not found locally.
+2026-09-05 01:06:40,241 [INFO] TTSStudio.Kokoro: Loading Kokoro with providers: ['CPUExecutionProvider']
+2026-09-05 01:06:42,034 [INFO] TTSStudio.Kokoro: Kokoro Engine initialized on CPU (Multi-Threaded)
+2026-09-05 01:06:42,270 [WARNING] phonemizer: words count mismatch on 200.0% of the lines (2/1)
+2026-09-05 01:08:10,468 [INFO] TTSStudio.F5TTS: F5-TTS model checkpoint not found locally.
+2026-09-05 01:22:08,128 [INFO] TTSStudio.Kokoro: Loading Kokoro with providers: ['CPUExecutionProvider']
+2026-09-05 01:22:11,649 [INFO] TTSStudio.Kokoro: Kokoro Engine initialized on CPU (Multi-Threaded)
+2026-09-05 01:22:12,093 [WARNING] phonemizer: words count mismatch on 200.0% of the lines (2/1)

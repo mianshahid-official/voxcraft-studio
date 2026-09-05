@@ -1,0 +1,11 @@
+[
+  {
+    "index": 1,
+    "chunk_id": "chunk_0001",
+    "text": "Testing full TTS service pipeline with chunking and metadata.",
+    "start_sec": 0.0,
+    "end_sec": 4.07,
+    "duration_sec": 4.07,
+    "chapter": "Chapter 1"
+  }
+]

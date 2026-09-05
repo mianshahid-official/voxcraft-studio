@@ -1,0 +1,62 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+build/
+dist/
+eggs/
+*.egg-info/
+*.egg
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Large Offline Neural Model Weights (>50MB)
+# Automatically downloaded via Setup Wizard or Model Hub in the app
+*.onnx
+*.safetensors
+*.bin
+*.pt
+*.pth
+
+# Audio exports, cache, and runtime logs
+exports/*.wav
+exports/*.mp3
+exports/*.flac
+exports/*.json
+cache/*
+logs/*.log
+projects/*.sqlite
+*.zip
+*.tar.gz
+tts/
+tts.zip
+
+# Preserve required directory structures & reference voice samples
+!.gitkeep
+!exports/.gitkeep
+!cache/.gitkeep
+!logs/.gitkeep
+!projects/.gitkeep
+!models/.gitkeep
+!models/kokoro/.gitkeep
+!models/piper/.gitkeep
+!models/f5tts/.gitkeep
+!data/reference_voices/*
+!app/resources/icons/*

@@ -1,0 +1,426 @@
+/* ==========================================================================
+   VoxCraft Studio - Studio Layout & View Styles
+   ========================================================================== */
+
+#app-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+/* -------------------------------------------------------------
+   Sidebar Navigation
+   ------------------------------------------------------------- */
+#sidebar {
+  width: 260px;
+  background: rgba(11, 14, 23, 0.95);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-lg) var(--space-md);
+  z-index: 10;
+  backdrop-filter: blur(20px);
+}
+
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 var(--space-sm) var(--space-lg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.brand-logo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--accent-primary-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: 0 0 16px var(--accent-primary-glow);
+}
+
+.brand-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.1;
+}
+
+.brand-subtitle {
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  color: var(--accent-cyan);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: var(--space-md);
+  flex-grow: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-family: var(--font-main);
+  font-weight: 500;
+  font-size: 0.94rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+}
+
+.nav-item.active {
+  background: rgba(139, 92, 246, 0.14);
+  color: #ffffff;
+  border-color: rgba(139, 92, 246, 0.35);
+  font-weight: 600;
+}
+
+.nav-item-icon {
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+}
+
+/* Sidebar Hardware HUD */
+.sidebar-hardware-hud {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hardware-hud-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.hardware-val {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* -------------------------------------------------------------
+   Main Content Area
+   ------------------------------------------------------------- */
+#main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: radial-gradient(circle at 80% 20%, rgba(19, 26, 45, 0.5) 0%, rgba(7, 9, 14, 0.98) 100%);
+  padding-bottom: 96px; /* Room for bottom player bar */
+}
+
+/* Top App Header */
+.top-header {
+  height: 64px;
+  padding: 0 var(--space-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(11, 14, 23, 0.4);
+  backdrop-filter: blur(12px);
+}
+
+.top-header-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.top-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Views Container */
+.view-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-xl);
+  display: none;
+}
+
+.view-container.active {
+  display: block;
+}
+
+/* -------------------------------------------------------------
+   Studio TTS View
+   ------------------------------------------------------------- */
+.studio-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+.editor-card {
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.editor-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.controls-card {
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.voice-preview-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+}
+
+.voice-avatar-lg {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent-primary-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  box-shadow: 0 0 14px rgba(139, 92, 246, 0.4);
+}
+
+/* -------------------------------------------------------------
+   Podcast & Dialogue Mode View
+   ------------------------------------------------------------- */
+.podcast-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.cast-row {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.cast-card {
+  min-width: 200px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.cast-card.selected {
+  border-color: var(--accent-primary);
+  background: rgba(139, 92, 246, 0.12);
+}
+
+.dialogue-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.turn-block {
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: rgba(19, 26, 45, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 16px;
+  align-items: start;
+  transition: all var(--transition-fast);
+}
+
+.turn-block:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.turn-block.highlighted {
+  border-color: var(--accent-cyan);
+  background: rgba(6, 182, 212, 0.1);
+  box-shadow: 0 0 16px var(--accent-cyan-glow);
+}
+
+/* -------------------------------------------------------------
+   Voice Explorer Grid
+   ------------------------------------------------------------- */
+.voice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+}
+
+.voice-card {
+  padding: var(--space-lg);
+  border-radius: var(--radius-lg);
+  background: rgba(19, 26, 45, 0.65);
+  border: var(--glass-border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.voice-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: var(--shadow-md);
+}
+
+.voice-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* -------------------------------------------------------------
+   Model Downloader Hub View
+   ------------------------------------------------------------- */
+.model-hub-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+.model-item-card {
+  padding: 18px 24px;
+  border-radius: var(--radius-md);
+  background: rgba(19, 26, 45, 0.7);
+  border: var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.progress-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent-primary-gradient);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+/* -------------------------------------------------------------
+   Bottom Floating Studio Audio Player Bar
+   ------------------------------------------------------------- */
+#bottom-player {
+  position: fixed;
+  bottom: 0;
+  left: 260px; /* Accounts for sidebar */
+  right: 0;
+  height: 90px;
+  background: rgba(11, 14, 23, 0.92);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  padding: 0 var(--space-xl);
+  display: grid;
+  grid-template-columns: 240px 1fr 280px;
+  align-items: center;
+  gap: 24px;
+  z-index: 100;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.player-track-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.player-wave-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#waveform-canvas {
+  width: 100%;
+  height: 42px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.player-controls-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}

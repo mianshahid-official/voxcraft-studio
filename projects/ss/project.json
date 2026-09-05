@@ -1,0 +1,13 @@
+{
+  "id": "proj_1788595879",
+  "name": "ss",
+  "created_at": 1788595879.40959,
+  "updated_at": 1788595879.4095905,
+  "engine": "kokoro",
+  "voice": "af_bella",
+  "speed": 1.0,
+  "pitch": 0.0,
+  "duration_sec": 0.0,
+  "word_count": 0,
+  "project_type": "tts"
+}
