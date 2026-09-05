@@ -21,6 +21,10 @@ KOKORO_DIR = MODELS_DIR / "kokoro"
 PIPER_DIR = MODELS_DIR / "piper"
 F5_DIR = MODELS_DIR / "f5_tts"
 
+# Ensure project root is in sys.path so app modules are always importable
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 
 class InstallerWizardApp:
     def __init__(self, root):
