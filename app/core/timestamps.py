@@ -5,7 +5,7 @@ Exports timing metadata to JSON, SRT, VTT, and CSV formats for video synchroniza
 import json
 from pathlib import Path
 from dataclasses import dataclass, asdict
-from typing import List, Dict, Any, Union
+from typing import List, Dict, Any, Union, Optional
 
 
 @dataclass
