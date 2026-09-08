@@ -16,6 +16,12 @@
 
 </div>
 
+<div align="center">
+
+![VoxCraft Studio UI Preview](docs/screenshots/app_preview.png)
+
+</div>
+
 ---
 
 ## 🌟 Highlights
