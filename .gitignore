@@ -17,7 +17,7 @@ venv/
 env/
 ENV/
 
-# IDEs and Editors
+# IDEs, OS, and Editors
 .vscode/
 .idea/
 *.swp
@@ -28,27 +28,27 @@ Thumbs.db
 desktop.ini
 
 # Large Offline Neural Model Weights (>50MB)
-# Automatically downloaded via Setup Wizard or Model Hub in the app
+# Automatically downloaded via Setup Wizard or In-App Model Hub
 *.onnx
 *.safetensors
 *.bin
 *.pt
 *.pth
 
-# Audio exports, cache, and runtime logs
-exports/*.wav
-exports/*.mp3
-exports/*.flac
-exports/*.json
+# Generated Audio Exports, Cache, and Runtime Logs
+exports/*
+!exports/.gitkeep
 cache/*
-logs/*.log
+!cache/.gitkeep
+logs/*
+!logs/.gitkeep
 projects/*.sqlite
 *.zip
 *.tar.gz
 tts/
 tts.zip
 
-# Preserve required directory structures & reference voice samples
+# Preserve required directory structures & reference assets
 !.gitkeep
 !exports/.gitkeep
 !cache/.gitkeep
@@ -58,5 +58,6 @@ tts.zip
 !models/kokoro/.gitkeep
 !models/piper/.gitkeep
 !models/f5tts/.gitkeep
+!models/f5tts/vocab.txt
 !data/reference_voices/*
 !app/resources/icons/*

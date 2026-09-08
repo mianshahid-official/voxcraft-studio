@@ -122,6 +122,15 @@ class DesktopAPIBridge:
             data_uri = AudioProcessor.to_base64_data_uri(processed_audio, sr)
             audio_id = f"gen_{int(time.time() * 1000)}"
 
+            # Auto-save export bundle into dedicated folder (audio, full text, word narration JSON, srt/vtt)
+            from ..core.timestamps import TimestampManager
+            bundle = TimestampManager.save_export_bundle(
+                text=text,
+                audio_array=processed_audio,
+                sample_rate=sr,
+                format_ext=params.get("format", "wav")
+            )
+
             # Save to history
             history_item = {
                 "id": audio_id,
@@ -132,14 +141,22 @@ class DesktopAPIBridge:
                 "speed": speed,
                 "pitch": pitch,
                 "duration_sec": round(duration, 2),
-                "audio_data_uri": data_uri
+                "audio_data_uri": data_uri,
+                "audio_path": bundle["audio_path"],
+                "export_folder": bundle["folder_path"],
+                "json_path": bundle["json_path"]
             }
             PROJECT_STORE.add_history_entry(history_item)
 
             return {
                 "success": True,
                 "audio_id": audio_id,
+                "audio_path": bundle["audio_path"],
                 "audio_data_uri": data_uri,
+                "export_folder": bundle["folder_path"],
+                "json_path": bundle["json_path"],
+                "text_path": bundle["text_path"],
+                "words": bundle["words"],
                 "duration_sec": round(duration, 2),
                 "generation_time_sec": round(gen_time, 2),
                 "sample_rate": sr,

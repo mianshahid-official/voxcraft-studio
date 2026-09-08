@@ -142,12 +142,35 @@ class PodcastGenerator:
         master_audio_array: np.ndarray,
         episode_title: str,
         format_ext: str = "mp3",
-        sample_rate: int = DEFAULT_SAMPLE_RATE
-    ) -> str:
-        """Export master podcast episode to exports directory."""
-        safe_title = "".join(c for c in episode_title if c.isalnum() or c in (' ', '_', '-')).strip()
-        if not safe_title:
-            safe_title = f"Podcast_{int(time.time())}"
-        filename = f"{safe_title}.{format_ext}"
-        out_path = EXPORTS_DIR / filename
-        return AudioProcessor.export_audio(master_audio_array, out_path, sample_rate, format_ext)
+        sample_rate: int = DEFAULT_SAMPLE_RATE,
+        script_text: Optional[str] = None,
+        timeline: Optional[List[Dict[str, Any]]] = None
+    ) -> Dict[str, Any]:
+        """Export master podcast episode to dedicated export directory."""
+        from ..core.timestamps import generate_export_slug, TimestampManager
+        slug = generate_export_slug(episode_title, custom_prefix=episode_title)
+        folder_path = EXPORTS_DIR / slug
+        folder_path.mkdir(parents=True, exist_ok=True)
+
+        filename = f"{slug}.{format_ext}"
+        out_path = folder_path / filename
+        saved_audio = AudioProcessor.export_audio(master_audio_array, out_path, sample_rate, format_ext)
+
+        # Save script text
+        if script_text:
+            txt_path = folder_path / f"{slug}.txt"
+            txt_path.write_text(script_text, encoding="utf-8")
+
+        # Save timestamps JSON & SRT
+        if timeline:
+            json_path = folder_path / f"{slug}.json"
+            TimestampManager.export_narration_json(script_text or episode_title, len(master_audio_array) / sample_rate, timeline, json_path)
+            srt_path = folder_path / f"{slug}.srt"
+            TimestampManager.export_srt(timeline, srt_path)
+
+        return {
+            "success": True,
+            "saved_path": str(saved_audio),
+            "export_folder": str(folder_path),
+            "filename": filename
+        }

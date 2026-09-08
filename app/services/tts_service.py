@@ -1,10 +1,11 @@
 """
 TTS Studio - Speech Synthesis Service
-Coordinates single text & long-form multi-chunk narration with retryable chunks and timestamps.
+Coordinates single text & long-form multi-chunk narration with retryable chunks,
+automatic per-conversion folder exports, and word-level narration timestamps.
 """
 import time
 from pathlib import Path
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, Any, List, Optional, Tuple, Callable
 import numpy as np
 
@@ -12,7 +13,7 @@ from ..config.paths import EXPORTS_DIR, CACHE_DIR
 from ..core.audio import AudioProcessor
 from ..core.chunking import TextChunker, TextChunk
 from ..core.normalization import TextNormalizer
-from ..core.timestamps import TimestampManager
+from ..core.timestamps import TimestampManager, generate_export_slug
 from ..engines.registry import ENGINE_REGISTRY
 
 
@@ -27,6 +28,10 @@ class SynthesisResult:
     num_chunks: int
     sample_rate: int
     timestamps: List[Dict[str, Any]]
+    words: List[Dict[str, Any]] = field(default_factory=list)
+    export_folder: Optional[str] = None
+    json_path: Optional[str] = None
+    text_path: Optional[str] = None
     error: Optional[str] = None
 
 
@@ -50,7 +55,8 @@ class TTSService:
         progress_callback: Optional[Callable[[int, int, str], None]] = None
     ) -> SynthesisResult:
         """
-        Executes text normalization, chunking if long-form, synthesis, DSP effects, and exports.
+        Executes text normalization, chunking if long-form, synthesis, DSP effects,
+        and automatically exports audio, text, and word-level narration JSON to a dedicated folder.
         """
         start_time = time.time()
         clean_text = TextNormalizer.preprocess(text, custom_dict)
@@ -59,7 +65,7 @@ class TTSService:
             return SynthesisResult(
                 success=False, audio_path=None, audio_data_uri=None,
                 duration_sec=0, generation_time_sec=0, realtime_factor=0,
-                num_chunks=0, sample_rate=24000, timestamps=[], error="Text is empty."
+                num_chunks=0, sample_rate=24000, timestamps=[], words=[], error="Text is empty."
             )
 
         # Chunk text if long
@@ -70,7 +76,8 @@ class TTSService:
         total_chunks = len(chunks)
         audio_segments: List[np.ndarray] = []
         pauses: List[float] = []
-        timestamps: List[Dict[str, Any]] = []
+        chunk_timestamps: List[Dict[str, Any]] = []
+        all_word_timestamps: List[Dict[str, Any]] = []
 
         current_time = 0.0
         sample_rate = 24000
@@ -101,7 +108,7 @@ class TTSService:
             start_sec = current_time
             end_sec = start_sec + chunk_dur
 
-            timestamps.append({
+            chunk_timestamps.append({
                 "index": idx + 1,
                 "chunk_id": chunk.chunk_id,
                 "text": chunk.text,
@@ -110,6 +117,16 @@ class TTSService:
                 "duration_sec": round(chunk_dur, 2),
                 "chapter": chunk.chapter
             })
+
+            # Generate high-precision word-level timestamps for this chunk
+            chunk_words = TimestampManager.generate_chunk_word_timestamps(
+                chunk_text=chunk.text,
+                chunk_start_sec=start_sec,
+                chunk_duration_sec=chunk_dur,
+                audio_chunk=processed_chunk,
+                sample_rate=sr
+            )
+            all_word_timestamps.extend(chunk_words)
 
             current_time = end_sec + chunk.pause_after
 
@@ -127,29 +144,35 @@ class TTSService:
         elapsed = max(0.01, time.time() - start_time)
         rtf = round(elapsed / max(0.1, total_duration), 3)
 
-        # Export audio
-        out_name = output_filename or f"synth_{int(time.time())}"
-        out_path = EXPORTS_DIR / f"{out_name}.wav"
-        saved_file = AudioProcessor.export_audio(master_audio, out_path, sample_rate, "wav")
+        # Automatically save export bundle into dedicated folder in exports/
+        bundle = TimestampManager.save_export_bundle(
+            text=text,
+            audio_array=master_audio,
+            sample_rate=sample_rate,
+            custom_slug=output_filename,
+            format_ext="wav",
+            word_timestamps=all_word_timestamps,
+            chunk_timestamps=chunk_timestamps
+        )
 
         # Base64 data URI for instant playback
         wav_bytes = AudioProcessor.numpy_to_wav_bytes(master_audio, sample_rate)
         b64 = AudioProcessor.to_base64_data_uri(master_audio, sample_rate) if hasattr(AudioProcessor, 'to_base64_data_uri') else f"data:audio/wav;base64,{import_base64(wav_bytes)}"
 
-        # Save timestamps JSON
-        ts_path = EXPORTS_DIR / f"{out_name}_timestamps.json"
-        TimestampManager.export_json(timestamps, ts_path)
-
         return SynthesisResult(
             success=True,
-            audio_path=saved_file,
+            audio_path=bundle["audio_path"],
             audio_data_uri=b64,
             duration_sec=round(total_duration, 2),
             generation_time_sec=round(elapsed, 2),
             realtime_factor=rtf,
             num_chunks=total_chunks,
             sample_rate=sample_rate,
-            timestamps=timestamps
+            timestamps=chunk_timestamps,
+            words=bundle["words"],
+            export_folder=bundle["folder_path"],
+            json_path=bundle["json_path"],
+            text_path=bundle["text_path"]
         )
 
 

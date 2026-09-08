@@ -199,23 +199,38 @@ class PodcastService:
         total_dur = len(master_audio) / sample_rate
         elapsed = time.time() - start_time
 
-        # Export master episode
-        safe_title = "".join(c for c in episode_title if c.isalnum() or c in (' ', '_', '-')).strip() or f"podcast_{int(time.time())}"
-        master_out = EXPORTS_DIR / f"{safe_title}.{output_format}"
+        # Export master episode bundle in dedicated folder
+        from ..core.timestamps import generate_export_slug
+        full_script = "\n\n".join([f"{b.get('speaker_label', 'Speaker')}: {b.get('text', '')}" for b in dialogue_blocks])
+        slug = generate_export_slug(episode_title, custom_prefix=episode_title)
+        folder_path = EXPORTS_DIR / slug
+        folder_path.mkdir(parents=True, exist_ok=True)
+
+        master_out = folder_path / f"{slug}.{output_format}"
         saved_master = AudioProcessor.export_audio(master_audio, master_out, sample_rate, output_format)
 
+        # Save script text
+        script_out = folder_path / f"{slug}.txt"
+        script_out.write_text(full_script, encoding="utf-8")
+
         # Export timestamps JSON & SRT
-        ts_json = EXPORTS_DIR / f"{safe_title}_timestamps.json"
-        TimestampManager.export_json(timeline, ts_json)
-        ts_srt = EXPORTS_DIR / f"{safe_title}.srt"
+        ts_json = folder_path / f"{slug}.json"
+        TimestampManager.export_narration_json(full_script, total_dur, timeline, ts_json)
+        ts_srt = folder_path / f"{slug}.srt"
         TimestampManager.export_srt(timeline, ts_srt)
+        ts_vtt = folder_path / f"{slug}.vtt"
+        TimestampManager.export_vtt(timeline, ts_vtt)
 
         return {
             "success": True,
             "master_audio_path": saved_master,
+            "export_folder": str(folder_path),
+            "script_path": str(script_out),
+            "json_path": str(ts_json),
             "total_duration_sec": round(total_dur, 2),
             "generation_time_sec": round(elapsed, 2),
             "num_blocks": len(audio_segments),
             "timeline": timeline,
-            "srt_path": str(ts_srt)
+            "srt_path": str(ts_srt),
+            "vtt_path": str(ts_vtt)
         }
