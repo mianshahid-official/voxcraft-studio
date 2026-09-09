@@ -202,11 +202,11 @@ class SettingsView(QWidget):
         ab_layout.addWidget(dev_box)
 
         lbl_engine_info = QLabel(
-            "<b>Neural Engines & Offline Stack:</b><br>"
-            "• <b>Engine 1 (Kokoro-82M):</b> High-fidelity 24kHz studio speech synthesis with multi-voice blending.<br>"
-            "• <b>Engine 2 (Piper Neural):</b> Ultra-fast multi-lingual local speech generation (EN, ES, FR, DE, IT, PT).<br>"
-            "• <b>Engine 3 (F5-TTS):</b> Flow-matching diffusion zero-shot voice cloning with reference audio adaptation.<br>"
-            "• <b>Framework:</b> PySide6 (Qt for Python), ONNX Runtime, DirectML/CUDA, PyAudio & SoundFile."
+            "<b>Offline Speech Technology & Architecture:</b><br>"
+            "• <b>Studio Voice Synthesis:</b> High-fidelity 24kHz neural speech synthesis with dynamic voice blending.<br>"
+            "• <b>Multi-Lingual Offline Stack:</b> Instant local speech generation across English, Spanish, French, German, Italian, and Hindi.<br>"
+            "• <b>Zero-Shot Voice Cloning:</b> Deep learning acoustic matching with reference audio adaptation.<br>"
+            "• <b>Platform & Acceleration:</b> PySide6 (Qt6), ONNX Runtime, DirectML / CUDA GPU Acceleration, SoundFile."
         )
         lbl_engine_info.setWordWrap(True)
         lbl_engine_info.setStyleSheet("color: #cbd5e1; font-size: 12px; line-height: 1.5; background: transparent; border: none;")

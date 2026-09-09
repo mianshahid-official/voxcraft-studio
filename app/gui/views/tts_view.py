@@ -90,16 +90,25 @@ class TTSView(QWidget):
         prompts_row.addWidget(lbl_quick)
 
         for name, text in [
-            ("🎙️ Podcast Intro", "Welcome back to the studio! Today we are exploring the frontiers of offline machine learning and high fidelity voice synthesis."),
-            ("📖 Storyteller", "Deep in the ancient forest, echoes of forgotten stories whispered through the twilight breeze."),
-            ("⚡ Tech News", "Today's report highlights breakthroughs in on-device AI models running without internet connectivity.")
+            ("🇺🇸 English", "Welcome to VoxCraft Studio, delivering ultra-fast neural speech synthesis directly on your machine."),
+            ("🇮🇳 हिन्दी", "नमस्ते, VoxCraft Studio में आपका स्वागत है। यह वॉइस मॉडल पूरी तरह से ऑफ़लाइन काम करता है।"),
+            ("🇪🇸 Español", "¡Hola a todos! Bienvenidos al estudio de generación de voz neuronal totalmente local y seguro."),
+            ("🇫🇷 Français", "Bonjour et bienvenue dans VoxCraft Studio, votre studio de synthèse vocale hors ligne.")
         ]:
             btn = QPushButton(name)
             btn.setProperty("class", "SecondaryBtn")
-            btn.setStyleSheet("padding: 4px 10px; font-size: 11px;")
+            btn.setStyleSheet("padding: 4px 8px; font-size: 11px;")
             btn.clicked.connect(lambda _, t=text: self.text_editor.setText(t))
             prompts_row.addWidget(btn)
+
         prompts_row.addStretch()
+
+        btn_import = QPushButton("📄 Import File")
+        btn_import.setProperty("class", "SecondaryBtn")
+        btn_import.setStyleSheet("padding: 4px 10px; font-size: 11px; background: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.3);")
+        btn_import.clicked.connect(self._import_file)
+        prompts_row.addWidget(btn_import)
+
         left_layout.addLayout(prompts_row)
 
         # Stats footer
@@ -122,32 +131,14 @@ class TTSView(QWidget):
         right_layout.setContentsMargins(18, 18, 18, 18)
         right_layout.setSpacing(14)
 
-        lbl_controls = QLabel("Voice & Engine Settings")
+        lbl_controls = QLabel("Voice & Audio Settings")
         lbl_controls.setStyleSheet("font-size: 15px; font-weight: 700; color: #ffffff;")
         right_layout.addWidget(lbl_controls)
 
-        # Language Selector Dropdown
-        right_layout.addWidget(QLabel("Spoken Language:"))
-        self.lang_combo = QComboBox()
-        self.lang_combo.addItems(["All Languages", "English", "British English", "Spanish", "French", "German", "Italian", "Portuguese", "Multi-Lingual"])
-        self.lang_combo.currentIndexChanged.connect(self._on_filter_changed)
-        right_layout.addWidget(self.lang_combo)
-
-        # Engine Selector
-        right_layout.addWidget(QLabel("TTS Engine:"))
-        self.engine_combo = QComboBox()
-        self.engine_combo.addItems([
-            "All Engines (Auto-Select)",
-            "Engine 1: Kokoro-82M (Studio Quality)",
-            "Engine 2: Piper Neural (Multi-Lingual)",
-            "Engine 3: F5-TTS (Voice Cloning)"
-        ])
-        self.engine_combo.currentIndexChanged.connect(self._on_filter_changed)
-        right_layout.addWidget(self.engine_combo)
-
-        # Voice Selector
+        # Single Unified Voice Selector
         right_layout.addWidget(QLabel("Speaker Voice:"))
         self.voice_combo = QComboBox()
+        self.voice_combo.setStyleSheet("font-size: 13px; font-weight: 600; padding: 6px 10px;")
         self.voice_combo.currentIndexChanged.connect(self._on_voice_changed)
         right_layout.addWidget(self.voice_combo)
 
@@ -162,8 +153,8 @@ class TTSView(QWidget):
         self.vol_slider = LabeledSlider("Volume Multiplier", 0.2, 2.0, 1.0, 0.05, "x")
         right_layout.addWidget(self.vol_slider)
 
-        # Voice Blending Toggle (Kokoro)
-        self.blend_check = QCheckBox("🧬 Enable Voice Blending (Engine 1)")
+        # Voice Blending Toggle (Available for Kokoro Studio voices)
+        self.blend_check = QCheckBox("🧬 Enable Voice Blending")
         self.blend_check.toggled.connect(self._on_blend_toggled)
         right_layout.addWidget(self.blend_check)
 
@@ -197,34 +188,40 @@ class TTSView(QWidget):
         main_layout.addWidget(right_card, stretch=4)
         self._update_text_stats()
 
+    def _import_file(self):
+        from PySide6.QtWidgets import QFileDialog
+        path, _ = QFileDialog.getOpenFileName(self, "Import Text or Script", "", "Text Files (*.txt *.md *.csv);;All Files (*)")
+        if path:
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    self.text_editor.setText(f.read())
+            except Exception as e:
+                QMessageBox.warning(self, "Import Error", f"Could not read file:\n{e}")
+
     def _load_voices(self):
-        self.voices = VoiceCatalog.get_all()
-        self._filter_voices()
-
-    def _on_filter_changed(self, idx: int):
-        self._filter_voices()
-
-    def _filter_voices(self):
-        eng_idx = self.engine_combo.currentIndex()
-        eng_filter = {0: "all", 1: "kokoro", 2: "piper", 3: "f5_tts"}.get(eng_idx, "all")
-        lang_idx = self.lang_combo.currentIndex() if hasattr(self, 'lang_combo') else 0
-        lang_filter = "all" if lang_idx == 0 else self.lang_combo.currentText()
-
+        self.voices = VoiceCatalog.get_tts_voices()
         self.voice_combo.blockSignals(True)
         self.voice_combo.clear()
-        filtered = VoiceCatalog.filter(engine=eng_filter, language=lang_filter)
-        for v in filtered:
-            self.voice_combo.addItem(VoiceCatalog.format_label(v, include_engine=True), v.get("id", ""))
+        for v in self.voices:
+            self.voice_combo.addItem(VoiceCatalog.format_label(v), v.get("id", ""))
         self.voice_combo.blockSignals(False)
 
         # Populate secondary blend combo with Kokoro voices
         self.blend_voice_b.clear()
         kokoro_voices = [v for v in self.voices if v.get("engine") == "kokoro"]
         for v in kokoro_voices:
-            self.blend_voice_b.addItem(VoiceCatalog.format_label(v, include_engine=False), v.get("id", ""))
+            self.blend_voice_b.addItem(VoiceCatalog.format_label(v), v.get("id", ""))
+
+        self._on_voice_changed(0)
 
     def _on_voice_changed(self, idx: int):
-        pass
+        voice_id = self.voice_combo.currentData() or ""
+        v = VoiceCatalog.get_by_id(voice_id)
+        is_kokoro = (v.get("engine") == "kokoro") if v else True
+        self.blend_check.setVisible(is_kokoro)
+        if not is_kokoro:
+            self.blend_check.setChecked(False)
+            self.blend_container.setVisible(False)
 
     def _on_blend_toggled(self, checked: bool):
         self.blend_container.setVisible(checked)
@@ -245,15 +242,33 @@ class TTSView(QWidget):
 
         voice_id = self.voice_combo.currentData() or "af_bella"
         v_meta = VoiceCatalog.get_by_id(voice_id)
+        if not v_meta:
+            return
 
-        eng_idx = self.engine_combo.currentIndex()
-        if eng_idx == 0:
-            engine_hint = v_meta.get("engine", "kokoro") if v_meta else "kokoro"
-        else:
-            engine_hint = {1: "kokoro", 2: "piper", 3: "f5_tts"}.get(eng_idx, "kokoro")
+        # Check if the voice model package is installed locally
+        installed, manifest_key = VoiceCatalog.is_model_installed(voice_id)
+        if not installed:
+            from ..widgets.download_dialog import ModelDownloadDialog
+            dlg = ModelDownloadDialog(voice_meta=v_meta, manifest_key=manifest_key, parent=self)
+            res = dlg.exec()
+            if res == QDialog.Accepted:
+                # Successfully downloaded model! Continue with synthesis
+                self._start_synthesis(text, voice_id, v_meta)
+            else:
+                if getattr(dlg, 'download_in_background', False):
+                    QMessageBox.information(
+                        self, "Downloading in Background",
+                        f"Model package for '{v_meta.get('name')}' is downloading in the background.\nYou will be able to use it once completed."
+                    )
+            return
+
+        self._start_synthesis(text, voice_id, v_meta)
+
+    def _start_synthesis(self, text: str, voice_id: str, v_meta: dict):
+        engine_hint = v_meta.get("engine", "kokoro")
 
         voice_blend = None
-        if self.blend_check.isChecked():
+        if self.blend_check.isChecked() and engine_hint == "kokoro":
             voice_blend = {
                 "voice_a": voice_id,
                 "voice_b": self.blend_voice_b.currentData(),
@@ -296,3 +311,4 @@ class TTSView(QWidget):
             )
         else:
             QMessageBox.critical(self, "Synthesis Error", f"Speech generation failed:\n{res.error}")
+

@@ -11,8 +11,115 @@ from PySide6.QtWidgets import (
     QSlider, QComboBox, QFileDialog, QFrame, QStyle
 )
 from PySide6.QtCore import Qt, QUrl, QTimer, Signal
-from PySide6.QtGui import QPainter, QColor, QLinearGradient, QPen, QBrush
+from PySide6.QtGui import QPainter, QColor, QLinearGradient, QPen, QBrush, QPainterPath
+from PySide6.QtCore import QPointF, QRectF
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
+
+
+class PlayPauseButton(QPushButton):
+    """Custom vector-rendered circular play/pause button that guarantees clean white icons with zero OS emoji artifacts."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFixedSize(42, 42)
+        self.setCursor(Qt.PointingHandCursor)
+        self._is_playing = False
+        self._is_hovered = False
+        self._is_pressed = False
+        self.setStyleSheet("background: transparent; border: none; outline: none;")
+
+    def set_playing(self, playing: bool):
+        if self._is_playing != playing:
+            self._is_playing = playing
+            self.update()
+
+    def is_playing(self) -> bool:
+        return self._is_playing
+
+    def enterEvent(self, event):
+        self._is_hovered = True
+        self.update()
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        self._is_hovered = False
+        self.update()
+        super().leaveEvent(event)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self._is_pressed = True
+            self.update()
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        self._is_pressed = False
+        self.update()
+        super().mouseReleaseEvent(event)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setRenderHint(QPainter.SmoothPixmapTransform)
+
+        w = self.width()
+        h = self.height()
+
+        # 1. Background gradient circle
+        gradient = QLinearGradient(0, 0, w, h)
+        if not self.isEnabled():
+            painter.setBrush(QColor(40, 45, 60))
+        elif self._is_pressed:
+            painter.setBrush(QColor("#6d28d9"))
+        elif self._is_hovered:
+            gradient.setColorAt(0.0, QColor("#9333ea"))
+            gradient.setColorAt(1.0, QColor("#6b21a8"))
+            painter.setBrush(gradient)
+        else:
+            gradient.setColorAt(0.0, QColor("#8b5cf6"))
+            gradient.setColorAt(1.0, QColor("#7c3aed"))
+            painter.setBrush(gradient)
+
+        painter.setPen(Qt.NoPen)
+        painter.drawEllipse(1, 1, w - 2, h - 2)
+
+        # 2. Draw Vector Icon (Play Triangle or Pause Bars) in Pure White
+        icon_color = QColor("#ffffff") if self.isEnabled() else QColor("#64748b")
+        painter.setBrush(icon_color)
+
+        cx, cy = w / 2.0, h / 2.0
+
+        if self._is_playing:
+            # Draw Two Vertical Pause Bars (Pure White)
+            bar_w = 4.0
+            bar_h = 15.0
+            gap = 5.0
+            r = 1.5
+
+            left_x = cx - gap / 2.0 - bar_w
+            top_y = cy - bar_h / 2.0
+            painter.drawRoundedRect(QRectF(left_x, top_y, bar_w, bar_h), r, r)
+
+            right_x = cx + gap / 2.0
+            painter.drawRoundedRect(QRectF(right_x, top_y, bar_w, bar_h), r, r)
+        else:
+            # Draw Play Triangle (Pure White)
+            tri_w = 14.0
+            tri_h = 16.0
+            offset_x = 1.5  # visual center optical adjustment
+
+            p1 = QPointF(cx - tri_w / 2.0 + offset_x, cy - tri_h / 2.0)
+            p2 = QPointF(cx + tri_w / 2.0 + offset_x, cy)
+            p3 = QPointF(cx - tri_w / 2.0 + offset_x, cy + tri_h / 2.0)
+
+            path = QPainterPath()
+            path.moveTo(p1)
+            path.lineTo(p2)
+            path.lineTo(p3)
+            path.closeSubpath()
+            painter.drawPath(path)
+
+        painter.end()
 
 
 class WaveformVisualizer(QWidget):
@@ -112,21 +219,7 @@ class AudioPlayerWidget(QFrame):
         left_layout.setContentsMargins(0, 0, 0, 0)
         left_layout.setSpacing(12)
 
-        self.play_btn = QPushButton("▶")
-        self.play_btn.setFixedSize(42, 42)
-        self.play_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #8b5cf6;
-                color: #ffffff;
-                font-size: 16px;
-                font-weight: bold;
-                border-radius: 21px;
-                border: none;
-            }
-            QPushButton:hover {
-                background-color: #7c3aed;
-            }
-        """)
+        self.play_btn = PlayPauseButton()
         left_layout.addWidget(self.play_btn)
 
         meta_layout = QVBoxLayout()
@@ -257,13 +350,13 @@ class AudioPlayerWidget(QFrame):
 
     def _on_state_changed(self, state):
         if state == QMediaPlayer.PlayingState:
-            self.play_btn.setText("⏸")
+            self.play_btn.set_playing(True)
         else:
-            self.play_btn.setText("▶")
+            self.play_btn.set_playing(False)
 
     def _on_media_status_changed(self, status):
         if status == QMediaPlayer.EndOfMedia:
-            self.play_btn.setText("▶")
+            self.play_btn.set_playing(False)
             self.player.setPosition(0)
             self.waveform.set_progress(0.0)
             dur = self.format_time(self.duration_ms // 1000)

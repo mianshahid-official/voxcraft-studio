@@ -38,7 +38,7 @@ class KokoroEngine(TTSEngine):
             supports_ssml_pauses=True,
             min_ram_gb=1.5,
             recommended_vram_gb=2.0,
-            supported_languages=["en_US", "en_GB", "ja", "zh", "es", "fr", "hi", "it", "pt_BR"],
+            supported_languages=["en_US", "hi", "es", "fr"],
             default_sample_rate=24000
         )
 
@@ -55,7 +55,6 @@ class KokoroEngine(TTSEngine):
         voices_candidates = [
             KOKORO_DIR / "voices-v1.0.bin",
             KOKORO_DIR / "voices.bin",
-            KOKORO_DIR / "voices.json",
         ]
         for v in voices_candidates:
             if v.exists() and v.stat().st_size > 1024:
@@ -119,53 +118,87 @@ class KokoroEngine(TTSEngine):
 
     def get_voices(self) -> List[Dict[str, Any]]:
         return [
+            # American English (Female)
             {"id": "af_bella", "name": "Bella", "gender": "Female", "language": "English (US)", "style": "Podcast / Warm", "avatar": "🎙️"},
             {"id": "af_sarah", "name": "Sarah", "gender": "Female", "language": "English (US)", "style": "Audiobook / Calm", "avatar": "📖"},
             {"id": "af_nicole", "name": "Nicole", "gender": "Female", "language": "English (US)", "style": "News / Professional", "avatar": "💼"},
             {"id": "af_sky", "name": "Sky", "gender": "Female", "language": "English (US)", "style": "Casual / Friendly", "avatar": "✨"},
+            {"id": "af_alloy", "name": "Alloy", "gender": "Female", "language": "English (US)", "style": "Crisp / Clear", "avatar": "⚡"},
+            {"id": "af_aoede", "name": "Aoede", "gender": "Female", "language": "English (US)", "style": "Melodic / Narrative", "avatar": "🎵"},
+            {"id": "af_heart", "name": "Heart", "gender": "Female", "language": "English (US)", "style": "Empathetic / Warm", "avatar": "💖"},
+            {"id": "af_jessica", "name": "Jessica", "gender": "Female", "language": "English (US)", "style": "Conversational", "avatar": "☕"},
+            {"id": "af_kore", "name": "Kore", "gender": "Female", "language": "English (US)", "style": "Youthful / Bright", "avatar": "🌸"},
+            {"id": "af_nova", "name": "Nova", "gender": "Female", "language": "English (US)", "style": "Energetic / Dynamic", "avatar": "🌟"},
+            {"id": "af_river", "name": "River", "gender": "Female", "language": "English (US)", "style": "Calm / Meditative", "avatar": "🌊"},
+
+            # American English (Male)
             {"id": "am_adam", "name": "Adam", "gender": "Male", "language": "English (US)", "style": "Narrator / Deep", "avatar": "🎬"},
-            {"id": "am_michael", "name": "Michael", "gender": "Male", "language": "English (US)", "style": "Podcast / Charismatic", "avatar": "🎙️"},
-            {"id": "bf_emma", "name": "Emma", "gender": "Female", "language": "English (UK)", "style": "Classic Literature", "avatar": "👑"},
-            {"id": "bf_isabella", "name": "Isabella", "gender": "Female", "language": "English (UK)", "style": "Modern British", "avatar": "☕"},
-            {"id": "bm_george", "name": "George", "gender": "Male", "language": "English (UK)", "style": "Scholarly / History", "avatar": "🏛️"},
-            {"id": "bm_lewis", "name": "Lewis", "gender": "Male", "language": "English (UK)", "style": "Storyteller / Warm", "avatar": "🏰"}
+            {"id": "am_michael", "name": "Michael", "gender": "Male", "language": "English (US)", "style": "Podcast Host", "avatar": "🎙️"},
+            {"id": "am_echo", "name": "Echo", "gender": "Male", "language": "English (US)", "style": "Studio Announcer", "avatar": "📢"},
+            {"id": "am_eric", "name": "Eric", "gender": "Male", "language": "English (US)", "style": "Warm / Expressive", "avatar": "🎧"},
+            {"id": "am_fenrir", "name": "Fenrir", "gender": "Male", "language": "English (US)", "style": "Resonant / Powerful", "avatar": "🐺"},
+            {"id": "am_liam", "name": "Liam", "gender": "Male", "language": "English (US)", "style": "Modern / Youthful", "avatar": "📱"},
+            {"id": "am_onyx", "name": "Onyx", "gender": "Male", "language": "English (US)", "style": "Deep Baritone", "avatar": "🗿"},
+            {"id": "am_puck", "name": "Puck", "gender": "Male", "language": "English (US)", "style": "Playful / Fast", "avatar": "🎭"},
+            {"id": "am_santa", "name": "Santa", "gender": "Male", "language": "English (US)", "style": "Jolly / Mature", "avatar": "🎅"},
+
+            # Hindi (Female & Male)
+            {"id": "hf_alpha", "name": "Alpha (अल्फा)", "gender": "Female", "language": "Hindi", "style": "Warm / Natural Hindi", "avatar": "🇮🇳"},
+            {"id": "hf_beta", "name": "Beta (बीटा)", "gender": "Female", "language": "Hindi", "style": "Clear / Expressive Hindi", "avatar": "🌸"},
+            {"id": "hm_omega", "name": "Omega (ओमेगा)", "gender": "Male", "language": "Hindi", "style": "Deep Narrator Hindi", "avatar": "🎙️"},
+            {"id": "hm_psi", "name": "Psi (साई)", "gender": "Male", "language": "Hindi", "style": "Conversational Hindi", "avatar": "🇮🇳"},
+
+            # Spanish (Female & Male)
+            {"id": "ef_dora", "name": "Dora", "gender": "Female", "language": "Spanish", "style": "Castilian / Expressive", "avatar": "🇪🇸"},
+            {"id": "em_alex", "name": "Alex", "gender": "Male", "language": "Spanish", "style": "Narrator / Neutral Spanish", "avatar": "🎙️"},
+            {"id": "em_santa", "name": "Santa (ES)", "gender": "Male", "language": "Spanish", "style": "Warm Spanish Voice", "avatar": "🎅"},
+
+            # French (Female)
+            {"id": "ff_siwis", "name": "Siwis", "gender": "Female", "language": "French", "style": "Parisian / Articulate", "avatar": "🇫🇷"}
         ]
 
     def _resolve_voice_and_lang(self, voice: str) -> Tuple[str, str]:
         """Resolves voice name and language code against available Kokoro voice embeddings."""
-        known_voices = {
-            "af_bella", "af_sarah", "af_nicole", "af_sky", "af",
-            "am_adam", "am_michael", "bf_emma", "bf_isabella", "bm_george", "bm_lewis"
+        available_voices = {
+            "af_alloy", "af_aoede", "af_bella", "af_heart", "af_jessica", "af_kore",
+            "af_nicole", "af_nova", "af_river", "af_sarah", "af_sky",
+            "am_adam", "am_echo", "am_eric", "am_fenrir", "am_liam", "am_michael",
+            "am_onyx", "am_puck", "am_santa",
+            "ef_dora", "em_alex", "em_santa",
+            "ff_siwis",
+            "hf_alpha", "hf_beta", "hm_omega", "hm_psi"
         }
 
-        lang = "en-us"
-        if voice.startswith("jf_") or voice.startswith("jm_") or "japanese" in voice.lower():
-            lang = "ja"
-        elif voice.startswith("zf_") or voice.startswith("zm_") or "chinese" in voice.lower() or "mandarin" in voice.lower():
-            lang = "zh"
-        elif voice.startswith("ef_") or voice.startswith("em_") or "spanish" in voice.lower():
-            lang = "es"
-        elif voice.startswith("ff_") or voice.startswith("fm_") or "french" in voice.lower():
-            lang = "fr"
-        elif voice.startswith("bf_") or voice.startswith("bm_") or "british" in voice.lower() or "uk" in voice.lower():
-            lang = "en-gb"
-        elif voice.startswith("hf_") or voice.startswith("hm_") or "hindi" in voice.lower():
+        v_lower = voice.lower().strip()
+
+        # 1. Hindi
+        if v_lower.startswith("hf_") or v_lower.startswith("hm_") or "hindi" in v_lower:
             lang = "hi"
-        elif voice.startswith("if_") or voice.startswith("im_") or "italian" in voice.lower():
-            lang = "it"
-        elif voice.startswith("pf_") or voice.startswith("pm_") or "portuguese" in voice.lower():
-            lang = "pt-br"
+            target = voice if voice in available_voices else ("hm_omega" if "hm" in v_lower or "male" in v_lower else "hf_alpha")
+            return target, lang
 
-        target_voice = voice
-        if target_voice not in known_voices:
-            if target_voice.startswith("am_") or target_voice.startswith("bm_") or target_voice.startswith("em_") or target_voice.startswith("fm_"):
-                target_voice = "am_adam"
-            elif target_voice.startswith("bf_"):
-                target_voice = "bf_emma"
-            else:
-                target_voice = "af_bella"
+        # 2. Spanish
+        if v_lower.startswith("ef_") or v_lower.startswith("em_") or "spanish" in v_lower:
+            lang = "es"
+            target = voice if voice in available_voices else ("em_alex" if "em" in v_lower or "male" in v_lower else "ef_dora")
+            return target, lang
 
-        return target_voice, lang
+        # 3. French
+        if v_lower.startswith("ff_") or v_lower.startswith("fm_") or "french" in v_lower:
+            lang = "fr-fr"
+            target = "ff_siwis"
+            return target, lang
+
+        # 4. American English (Default)
+        lang = "en-us"
+        if voice in available_voices:
+            target = voice
+        elif v_lower.startswith("am_") or "male" in v_lower:
+            target = "am_adam"
+        else:
+            target = "af_bella"
+
+        return target, lang
 
     def generate(
         self,
@@ -203,3 +236,4 @@ class KokoroEngine(TTSEngine):
         except Exception as e:
             logger.error(f"Kokoro generation error: {e}", exc_info=True)
             raise RuntimeError(f"Kokoro synthesis failed: {e}")
+

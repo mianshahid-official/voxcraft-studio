@@ -41,12 +41,12 @@ F5_SAMPLE_RATE = 24000
 
 # Remote Official Model Sources (Offline Downloader Manifest)
 MODEL_DOWNLOAD_MANIFEST = {
-    # Kokoro ONNX Models & Voice Embeddings
+    # Studio Multi-Lingual Core Package
     "kokoro-v0_19": {
         "engine": "kokoro",
-        "name": "Kokoro TTS v0.19 (ONNX)",
-        "description": "High quality 82M param lightweight TTS model (English, Spanish, French, Japanese, Mandarin, etc.)",
-        "size_mb": 310,
+        "name": "Studio Multi-Lingual Voice Pack (28 Voices)",
+        "description": "Premium 24kHz ultra-HD neural voices featuring 28 expressive characters across US English, Hindi, Spanish, and French with dynamic voice blending.",
+        "size_mb": 325,
         "files": [
             {
                 "filename": "kokoro-v0_19.onnx",
@@ -58,56 +58,21 @@ MODEL_DOWNLOAD_MANIFEST = {
                 "size_mb": 310,
             },
             {
-                "filename": "voices.bin",
-                "target_dir": KOKORO_MODELS_DIR,
-                "urls": [
-                    "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.bin",
-                    "https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices.bin",
-                ],
-                "size_mb": 28,
-            },
-            {
-                "filename": "voices.json",
-                "target_dir": KOKORO_MODELS_DIR,
-                "urls": [
-                    "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.json",
-                    "https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices.json",
-                ],
-                "size_mb": 1,
-            },
-        ],
-    },
-    "kokoro-v1_0": {
-        "engine": "kokoro",
-        "name": "Kokoro TTS v1.0 (ONNX Enhanced)",
-        "description": "Latest release of Kokoro TTS with expanded multi-lingual voices and improved prosody",
-        "size_mb": 320,
-        "files": [
-            {
-                "filename": "kokoro-v1.0.onnx",
-                "target_dir": KOKORO_MODELS_DIR,
-                "urls": [
-                    "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx",
-                    "https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/kokoro-v1.0.onnx",
-                ],
-                "size_mb": 320,
-            },
-            {
                 "filename": "voices-v1.0.bin",
                 "target_dir": KOKORO_MODELS_DIR,
                 "urls": [
                     "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin",
-                    "https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices-v1.0.bin",
+                    "https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices.bin",
                 ],
-                "size_mb": 32,
+                "size_mb": 14,
             },
         ],
     },
-    # Piper Neural Voices (Curated Popular Packs)
+    # Offline Voice Packages
     "piper-en_US-libritts_r-medium": {
         "engine": "piper",
-        "name": "Piper English (US) - LibriTTS-R Studio Multi-Speaker",
-        "description": "Studio quality US English with over 900 distinctive speaker voices",
+        "name": "US English Studio Broadcaster — LibriTTS",
+        "description": "Extensive studio broadcast voice collection featuring diverse tonal registers and character variations.",
         "size_mb": 65,
         "files": [
             {
@@ -130,8 +95,8 @@ MODEL_DOWNLOAD_MANIFEST = {
     },
     "piper-en_US-lessac-medium": {
         "engine": "piper",
-        "name": "Piper English (US) - Lessac Clean Narrator",
-        "description": "Clear, crisp, articulate female narration voice ideal for audiobooks and podcasts",
+        "name": "US English Narrator — Lessac",
+        "description": "Crisp, balanced American English female narration voice crafted for audiobooks and tutorials.",
         "size_mb": 58,
         "files": [
             {
@@ -154,8 +119,8 @@ MODEL_DOWNLOAD_MANIFEST = {
     },
     "piper-en_GB-alan-medium": {
         "engine": "piper",
-        "name": "Piper English (GB) - Alan British Narrator",
-        "description": "Warm, refined British male voice with natural intonation",
+        "name": "British English Narrator — Alan",
+        "description": "Rich, authoritative British gentleman narrator voice with distinguished articulation.",
         "size_mb": 60,
         "files": [
             {
@@ -178,9 +143,9 @@ MODEL_DOWNLOAD_MANIFEST = {
     },
     "piper-es_ES-davefx-medium": {
         "engine": "piper",
-        "name": "Piper Spanish (ES) - Davefx Male Voice",
-        "description": "Natural European Spanish male voice for dialogue and tutorials",
-        "size_mb": 58,
+        "name": "Spanish Castilian Voice — Dave",
+        "description": "Natural European Spanish male voice with energetic cadence and clean articulation.",
+        "size_mb": 62,
         "files": [
             {
                 "filename": "es_ES-davefx-medium.onnx",
@@ -188,7 +153,7 @@ MODEL_DOWNLOAD_MANIFEST = {
                 "urls": [
                     "https://huggingface.co/rhasspy/piper-voices/resolve/main/es/es_ES/davefx/medium/es_ES-davefx-medium.onnx"
                 ],
-                "size_mb": 56,
+                "size_mb": 60,
             },
             {
                 "filename": "es_ES-davefx-medium.onnx.json",
@@ -202,9 +167,9 @@ MODEL_DOWNLOAD_MANIFEST = {
     },
     "piper-fr_FR-siwis-medium": {
         "engine": "piper",
-        "name": "Piper French (FR) - Siwis Female Voice",
-        "description": "Smooth, professional Parisian French female voice",
-        "size_mb": 62,
+        "name": "French Parisian Voice — Siwis",
+        "description": "Smooth, eloquent Parisian French female voice with natural cadence for audiobooks and media.",
+        "size_mb": 64,
         "files": [
             {
                 "filename": "fr_FR-siwis-medium.onnx",
@@ -212,7 +177,7 @@ MODEL_DOWNLOAD_MANIFEST = {
                 "urls": [
                     "https://huggingface.co/rhasspy/piper-voices/resolve/main/fr/fr_FR/siwis/medium/fr_FR-siwis-medium.onnx"
                 ],
-                "size_mb": 60,
+                "size_mb": 62,
             },
             {
                 "filename": "fr_FR-siwis-medium.onnx.json",
@@ -224,35 +189,83 @@ MODEL_DOWNLOAD_MANIFEST = {
             },
         ],
     },
-    "piper-de_DE-eva_k-medium": {
+    "piper-de_DE-thorsten-medium": {
         "engine": "piper",
-        "name": "Piper German (DE) - Eva K Female Voice",
-        "description": "Clear standard German female voice",
-        "size_mb": 58,
+        "name": "German Professional Voice — Thorsten",
+        "description": "Deep, articulate Standard German male voice designed for presentations and narration.",
+        "size_mb": 61,
         "files": [
             {
-                "filename": "de_DE-eva_k-medium.onnx",
+                "filename": "de_DE-thorsten-medium.onnx",
                 "target_dir": PIPER_MODELS_DIR,
                 "urls": [
-                    "https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/eva_k/medium/de_DE-eva_k-medium.onnx"
+                    "https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/thorsten/medium/de_DE-thorsten-medium.onnx"
                 ],
-                "size_mb": 56,
+                "size_mb": 59,
             },
             {
-                "filename": "de_DE-eva_k-medium.onnx.json",
+                "filename": "de_DE-thorsten-medium.onnx.json",
                 "target_dir": PIPER_MODELS_DIR,
                 "urls": [
-                    "https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/eva_k/medium/de_DE-eva_k-medium.onnx.json"
+                    "https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/thorsten/medium/de_DE-thorsten-medium.onnx.json"
                 ],
                 "size_mb": 2,
             },
         ],
     },
-    # F5-TTS Voice Cloning Flow Matching Model
+    "piper-it_IT-paola-medium": {
+        "engine": "piper",
+        "name": "Italian Expressive Voice — Paola",
+        "description": "Warm, expressive Italian female voice crafted for dialogue and podcast narration.",
+        "size_mb": 60,
+        "files": [
+            {
+                "filename": "it_IT-paola-medium.onnx",
+                "target_dir": PIPER_MODELS_DIR,
+                "urls": [
+                    "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/paola/medium/it_IT-paola-medium.onnx"
+                ],
+                "size_mb": 58,
+            },
+            {
+                "filename": "it_IT-paola-medium.onnx.json",
+                "target_dir": PIPER_MODELS_DIR,
+                "urls": [
+                    "https://huggingface.co/rhasspy/piper-voices/resolve/main/it/it_IT/paola/medium/it_IT-paola-medium.onnx.json"
+                ],
+                "size_mb": 2,
+            },
+        ],
+    },
+    "piper-pt_BR-faber-medium": {
+        "engine": "piper",
+        "name": "Portuguese Brazilian Voice — Faber",
+        "description": "Clear Brazilian Portuguese narrator voice with natural intonation.",
+        "size_mb": 63,
+        "files": [
+            {
+                "filename": "pt_BR-faber-medium.onnx",
+                "target_dir": PIPER_MODELS_DIR,
+                "urls": [
+                    "https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx"
+                ],
+                "size_mb": 61,
+            },
+            {
+                "filename": "pt_BR-faber-medium.onnx.json",
+                "target_dir": PIPER_MODELS_DIR,
+                "urls": [
+                    "https://huggingface.co/rhasspy/piper-voices/resolve/main/pt/pt_BR/faber/medium/pt_BR-faber-medium.onnx.json"
+                ],
+                "size_mb": 2,
+            },
+        ],
+    },
+    # Neural Voice Cloning System
     "f5-tts-base": {
         "engine": "f5_tts",
-        "name": "F5-TTS Base Zero-Shot Voice Cloning Model",
-        "description": "State-of-the-art flow matching voice cloning model with Vocos vocoder (~1.2GB)",
+        "name": "Neural Voice Cloning Package",
+        "description": "Advanced acoustic flow-matching neural package enabling instant 1-click voice cloning from any reference audio clip.",
         "size_mb": 1250,
         "files": [
             {

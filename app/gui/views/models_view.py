@@ -1,6 +1,6 @@
 """
-VoxCraft Studio - Offline Model & Language Hub View
-Download additional voice models and languages inside the desktop app.
+VoxCraft Studio - Offline Voice Packages & Storage Hub View
+Modern glassmorphic store interface for managing offline studio voice packages.
 """
 import os
 import subprocess
@@ -17,8 +17,8 @@ from ...core.models import ModelManager, ModelStatus
 from ...config.paths import MODELS_DIR
 
 
-class ModelItemCard(QFrame):
-    """Detailed interactive card for an offline neural voice model / language pack."""
+class VoicePackageCard(GlassCard):
+    """Modern interactive card for an offline studio voice package."""
     downloadRequested = Signal(str)
     cancelRequested = Signal(str)
     deleteRequested = Signal(str)
@@ -26,61 +26,70 @@ class ModelItemCard(QFrame):
     def __init__(self, status: ModelStatus, parent=None):
         super().__init__(parent)
         self.status = status
-        self.setProperty("class", "GlassCard")
         self._init_ui()
 
     def _init_ui(self):
         s = self.status
         lay = QVBoxLayout(self)
-        lay.setContentsMargins(16, 14, 16, 14)
-        lay.setSpacing(10)
+        lay.setContentsMargins(18, 16, 18, 16)
+        lay.setSpacing(12)
 
-        # Top Row: Flag + Name + Engine Badge + Size Tag
+        # Top Row: Flag + Title & Details + Quality Badge + Size Pill
         top = QHBoxLayout()
-        top.setSpacing(10)
+        top.setSpacing(12)
 
         lbl_flag = QLabel(s.flag)
-        lbl_flag.setStyleSheet("font-size: 24px; background: transparent; border: none;")
+        lbl_flag.setStyleSheet("font-size: 28px; background: transparent; border: none;")
         top.addWidget(lbl_flag)
 
         name_box = QVBoxLayout()
-        name_box.setSpacing(1)
+        name_box.setSpacing(2)
         lbl_name = QLabel(s.name)
-        lbl_name.setStyleSheet("font-weight: 700; font-size: 14px; color: #ffffff; background: transparent; border: none;")
-        lbl_lang = QLabel(f"Language: <b>{s.language}</b> • Version: {s.version}")
-        lbl_lang.setStyleSheet("font-size: 11px; color: #94a3b8; background: transparent; border: none;")
+        lbl_name.setStyleSheet("font-weight: 700; font-size: 15px; color: #ffffff; background: transparent; border: none;")
+
+        vc_text = f"{s.voice_count} Voices" if s.voice_count > 1 else "Solo Voice"
+        lbl_meta = QLabel(f"<span style='color: #06b6d4; font-weight: 600;'>{s.category}</span> • {vc_text} • Language: <b>{s.language}</b>")
+        lbl_meta.setStyleSheet("font-size: 11px; color: #94a3b8; background: transparent; border: none;")
+
         name_box.addWidget(lbl_name)
-        name_box.addWidget(lbl_lang)
+        name_box.addWidget(lbl_meta)
         top.addLayout(name_box, stretch=1)
 
-        eng_label = "ENGINE 1" if s.engine == "kokoro" else ("ENGINE 2" if s.engine == "piper" else "ENGINE 3")
-        eng_badge = StatusBadge(eng_label, "gpu" if s.engine in ("kokoro", "f5_tts") else "cpu")
-        top.addWidget(eng_badge)
+        # Quality Badge
+        if s.engine == "kokoro":
+            q_badge = StatusBadge("⭐ Studio Ultra-HD", "gpu")
+        elif s.engine == "f5_tts":
+            q_badge = StatusBadge("🧬 Neural Cloning", "gpu")
+        else:
+            q_badge = StatusBadge("🎙️ Fast Neural", "cpu")
+        top.addWidget(q_badge)
 
-        lbl_sz = QLabel(f"📦 {s.size_mb} MB")
-        lbl_sz.setStyleSheet("color: #a78bfa; font-weight: 700; font-size: 11px; background: rgba(139, 92, 246, 0.15); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(139, 92, 246, 0.3);")
+        # Storage Size Pill
+        lbl_sz = QLabel(f"💾 {s.size_mb} MB")
+        lbl_sz.setStyleSheet("color: #c4b5fd; font-weight: 700; font-size: 11px; background: rgba(139, 92, 246, 0.15); padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(139, 92, 246, 0.3);")
         top.addWidget(lbl_sz)
+
         lay.addLayout(top)
 
         # Middle: Description
         lbl_desc = QLabel(s.description)
         lbl_desc.setWordWrap(True)
-        lbl_desc.setStyleSheet("color: #cbd5e1; font-size: 12px; line-height: 1.4; background: transparent; border: none;")
+        lbl_desc.setStyleSheet("color: #cbd5e1; font-size: 12px; line-height: 1.45; background: transparent; border: none;")
         lay.addWidget(lbl_desc)
 
-        # Bottom: Status & Action Buttons
+        # Bottom: Status & Action Footer
         bot = QHBoxLayout()
         bot.setSpacing(12)
 
         if s.is_installed:
-            lbl_st = QLabel("✓ Ready (Offline)")
-            lbl_st.setStyleSheet("color: #34d399; font-weight: 700; font-size: 12px; background: rgba(16, 185, 129, 0.12); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.3);")
+            lbl_st = QLabel("✓ Installed & Ready (100% Offline)")
+            lbl_st.setStyleSheet("color: #34d399; font-weight: 700; font-size: 12px; background: rgba(16, 185, 129, 0.12); padding: 6px 12px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.3);")
             bot.addWidget(lbl_st)
             bot.addStretch()
 
-            btn_del = QPushButton("🗑️ Remove")
+            btn_del = QPushButton("🗑️ Uninstall Pack")
             btn_del.setProperty("class", "SecondaryBtn")
-            btn_del.setStyleSheet("color: #f87171; border-color: rgba(248, 113, 113, 0.3);")
+            btn_del.setStyleSheet("color: #f87171; border-color: rgba(248, 113, 113, 0.3); padding: 6px 14px; font-size: 12px;")
             btn_del.clicked.connect(lambda: self.deleteRequested.emit(s.key))
             bot.addWidget(btn_del)
 
@@ -89,7 +98,7 @@ class ModelItemCard(QFrame):
             dl_box.setSpacing(4)
 
             p_row = QHBoxLayout()
-            lbl_dl_st = QLabel(f"⬇️ Downloading: {s.progress_pct:.0f}%")
+            lbl_dl_st = QLabel(f"⬇️ Downloading Package: {s.progress_pct:.0f}%")
             lbl_dl_st.setStyleSheet("color: #38bdf8; font-weight: 700; font-size: 11px;")
             p_row.addWidget(lbl_dl_st)
             p_row.addStretch()
@@ -108,17 +117,19 @@ class ModelItemCard(QFrame):
 
             btn_cancel = QPushButton("✕ Cancel")
             btn_cancel.setProperty("class", "SecondaryBtn")
+            btn_cancel.setStyleSheet("padding: 6px 14px; font-size: 12px;")
             btn_cancel.clicked.connect(lambda: self.cancelRequested.emit(s.key))
             bot.addWidget(btn_cancel)
 
         else:
-            lbl_st = QLabel("Available to Download")
-            lbl_st.setStyleSheet("color: #94a3b8; font-size: 11px;")
+            lbl_st = QLabel("Available for One-Click Download")
+            lbl_st.setStyleSheet("color: #94a3b8; font-size: 12px; font-style: italic;")
             bot.addWidget(lbl_st)
             bot.addStretch()
 
-            btn_dl = QPushButton("⬇️ Download Model")
+            btn_dl = QPushButton("⬇️ Install Voice Pack")
             btn_dl.setProperty("class", "PrimaryBtn")
+            btn_dl.setStyleSheet("padding: 7px 18px; font-size: 12px;")
             btn_dl.clicked.connect(lambda: self.downloadRequested.emit(s.key))
             bot.addWidget(btn_dl)
 
@@ -126,7 +137,7 @@ class ModelItemCard(QFrame):
 
 
 class ModelsView(QWidget):
-    """In-App Model & Multi-Lingual Voice Package Download Hub."""
+    """In-App Offline Voice Packages & Storage Manager Hub."""
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -140,31 +151,33 @@ class ModelsView(QWidget):
         # 1. Top Summary Banner Card
         top_card = GlassCard()
         t_lay = QHBoxLayout(top_card)
-        t_lay.setContentsMargins(18, 14, 18, 14)
+        t_lay.setContentsMargins(20, 16, 20, 16)
         t_lay.setSpacing(16)
 
         title_box = QVBoxLayout()
-        title_box.setSpacing(2)
-        lbl_head = QLabel("📦 Offline Neural Model & Language Hub")
+        title_box.setSpacing(3)
+        lbl_head = QLabel("📦 Offline Voice Packages & Library Storage")
         lbl_head.setStyleSheet("font-size: 17px; font-weight: 800; color: #ffffff; background: transparent; border: none;")
-        lbl_sub = QLabel("Download and manage offline speech engines and international language packages.")
+        lbl_sub = QLabel("Manage high-fidelity voice packages for 100% offline synthesis. Zero internet connection required after package installation.")
         lbl_sub.setStyleSheet("font-size: 12px; color: #94a3b8; background: transparent; border: none;")
         title_box.addWidget(lbl_head)
         title_box.addWidget(lbl_sub)
         t_lay.addLayout(title_box, stretch=1)
 
-        # Action Buttons
+        # Action & Metric Badges
         self.lbl_installed_count = QLabel("Installed: 0")
-        self.lbl_installed_count.setStyleSheet("color: #34d399; font-weight: 700; font-size: 12px; background: rgba(16, 185, 129, 0.12); padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);")
+        self.lbl_installed_count.setStyleSheet("color: #34d399; font-weight: 700; font-size: 12px; background: rgba(16, 185, 129, 0.12); padding: 7px 14px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3);")
         t_lay.addWidget(self.lbl_installed_count)
 
-        btn_open_folder = QPushButton("📁 Open Models Folder")
+        btn_open_folder = QPushButton("📁 Open Storage Folder")
         btn_open_folder.setProperty("class", "SecondaryBtn")
+        btn_open_folder.setStyleSheet("padding: 7px 14px;")
         btn_open_folder.clicked.connect(self._open_models_folder)
         t_lay.addWidget(btn_open_folder)
 
         btn_refresh = QPushButton("🔄 Refresh")
         btn_refresh.setProperty("class", "SecondaryBtn")
+        btn_refresh.setStyleSheet("padding: 7px 14px;")
         btn_refresh.clicked.connect(self.render_models)
         t_lay.addWidget(btn_refresh)
 
@@ -177,28 +190,44 @@ class ModelsView(QWidget):
         f_lay.setSpacing(12)
 
         self.search_input = QLineEdit()
-        self.search_input.setPlaceholderText("🔍 Search by model name, language, or engine...")
+        self.search_input.setPlaceholderText("🔍 Search voice packages by name, country or language...")
         self.search_input.textChanged.connect(self.render_models)
         f_lay.addWidget(self.search_input, stretch=2)
 
-        self.combo_engine = QComboBox()
-        self.combo_engine.addItems(["All Engines", "Engine 1: Kokoro-82M", "Engine 2: Piper Neural", "Engine 3: F5-TTS"])
-        self.combo_engine.currentIndexChanged.connect(self.render_models)
-        f_lay.addWidget(self.combo_engine)
+        self.combo_category = QComboBox()
+        self.combo_category.addItems([
+            "All Categories",
+            "⭐ Studio Multi-Voice",
+            "🎙️ Solo Narrators",
+            "🎧 Broadcast Collections",
+            "🧬 Voice Cloning"
+        ])
+        self.combo_category.currentIndexChanged.connect(self.render_models)
+        f_lay.addWidget(self.combo_category)
 
         self.combo_lang = QComboBox()
-        self.combo_lang.addItems(["All Languages", "English", "British English", "Spanish", "French", "German", "Italian", "Portuguese"])
+        self.combo_lang.addItems([
+            "All Languages",
+            "English",
+            "British English",
+            "Hindi",
+            "Spanish",
+            "French",
+            "German",
+            "Italian",
+            "Portuguese"
+        ])
         self.combo_lang.currentIndexChanged.connect(self.render_models)
         f_lay.addWidget(self.combo_lang)
 
         self.combo_status = QComboBox()
-        self.combo_status.addItems(["All Statuses", "Installed (Ready)", "Available for Download"])
+        self.combo_status.addItems(["All Statuses", "Installed & Ready", "Available for Download"])
         self.combo_status.currentIndexChanged.connect(self.render_models)
         f_lay.addWidget(self.combo_status)
 
         layout.addWidget(filter_card)
 
-        # 3. Scrollable List of Model Cards
+        # 3. Scrollable List of Voice Package Cards
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setStyleSheet("background: transparent; border: none;")
@@ -228,19 +257,27 @@ class ModelsView(QWidget):
 
         all_models = ModelManager.get_all_models_status()
         installed_count = sum(1 for m in all_models if m.is_installed)
-        self.lbl_installed_count.setText(f"Installed: {installed_count} / {len(all_models)} Models")
+        total_installed_mb = sum(m.size_mb for m in all_models if m.is_installed)
+        self.lbl_installed_count.setText(f"✓ {installed_count} / {len(all_models)} Packs Ready ({total_installed_mb} MB)")
 
         # Filters
         query = self.search_input.text().strip().lower()
-        eng_idx = self.combo_engine.currentIndex()
-        eng_filter = {0: "all", 1: "kokoro", 2: "piper", 3: "f5_tts"}.get(eng_idx, "all")
+
+        cat_idx = self.combo_category.currentIndex()
+        cat_filter = {
+            1: "Studio High-Fidelity",
+            2: "Solo Narrator",
+            3: "Multi-Speaker",
+            4: "Voice Cloning"
+        }.get(cat_idx, "all")
+
         lang_idx = self.combo_lang.currentIndex()
         lang_filter = self.combo_lang.currentText() if lang_idx > 0 else "all"
         stat_idx = self.combo_status.currentIndex()
 
         filtered = []
         for m in all_models:
-            if eng_filter != "all" and m.engine != eng_filter:
+            if cat_filter != "all" and cat_filter.lower() not in m.category.lower():
                 continue
             if lang_filter != "all" and lang_filter.lower() not in m.language.lower():
                 continue
@@ -253,7 +290,7 @@ class ModelsView(QWidget):
             filtered.append(m)
 
         for s in filtered:
-            card = ModelItemCard(s)
+            card = VoicePackageCard(s)
             card.downloadRequested.connect(self._on_download)
             card.cancelRequested.connect(self._on_cancel)
             card.deleteRequested.connect(self._on_delete)
@@ -271,8 +308,8 @@ class ModelsView(QWidget):
 
     def _on_delete(self, key: str):
         reply = QMessageBox.question(
-            self, "Confirm Delete",
-            f"Are you sure you want to remove the model '{key}' from local storage?",
+            self, "Confirm Uninstall",
+            f"Are you sure you want to uninstall and remove '{key}' from local storage?",
             QMessageBox.Yes | QMessageBox.No
         )
         if reply == QMessageBox.Yes:

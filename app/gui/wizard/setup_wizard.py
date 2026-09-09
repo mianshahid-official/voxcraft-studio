@@ -227,7 +227,7 @@ class SetupWizardDialog(QDialog):
         self.steppers: List[StepperItemWidget] = [
             StepperItemWidget(1, "Welcome", "Introduction & Scope"),
             StepperItemWidget(2, "Hardware Check", "CPU, GPU & Acceleration"),
-            StepperItemWidget(3, "Neural Models", "Select Offline Engines"),
+            StepperItemWidget(3, "Voice Packages", "Select Voice Libraries"),
             StepperItemWidget(4, "Download & Setup", "Integrity & Local Storage"),
             StepperItemWidget(5, "Ready to Launch", "Synthesis Test & Complete"),
         ]
@@ -331,14 +331,14 @@ class SetupWizardDialog(QDialog):
         lbl_lead.setStyleSheet("color: #cbd5e1; font-size: 13px; line-height: 1.5; font-weight: 500; background: transparent; border: none;")
         c_lay.addWidget(lbl_lead)
 
-        # 3 Key Engine Tiles
+        # 3 Key Voice Capabilities
         grid = QGridLayout()
         grid.setSpacing(10)
 
         engines = [
-            ("⚡", "Engine 1: Kokoro-82M", "24kHz studio-quality voice generation with dynamic multi-voice blending vectors."),
-            ("🌍", "Engine 2: Piper Neural", "Multi-lingual, ultra-fast speech synthesis optimized for instant CPU inference."),
-            ("🧬", "Engine 3: F5-TTS Cloning", "Zero-shot reference audio voice cloning with advanced flow-matching diffusion.")
+            ("✨", "Studio Ultra-HD (24kHz)", "24kHz studio-quality voice generation with 28 voices and dynamic multi-voice blending vectors."),
+            ("🌍", "International Voices", "Multi-lingual, ultra-fast speech synthesis across English, Spanish, French, German, and Hindi."),
+            ("🧬", "Instant Voice Cloning", "Zero-shot reference audio voice cloning with advanced acoustic matching.")
         ]
         for idx, (icon, name, desc) in enumerate(engines):
             tile = QFrame()
@@ -496,24 +496,24 @@ class SetupWizardDialog(QDialog):
         lay.setSpacing(12)
 
         self.card_kokoro = ModelSelectCard(
-            "kokoro", "⚡", "Engine 1: Kokoro-82M Studio Package", "~310 MB",
-            "High-fidelity 24kHz American, British, European & Asian voices. Supports dual-voice blending vectors.",
+            "kokoro", "✨", "Studio Core Multi-Lingual Package (28 Voices)", "~325 MB",
+            "High-fidelity 24kHz American English, Hindi, Spanish, and French studio voices. Supports dual-voice blending vectors.",
             recommended=True, checked=True
         )
         self.card_kokoro.toggled.connect(self._update_total_size)
         lay.addWidget(self.card_kokoro)
 
         self.card_piper = ModelSelectCard(
-            "piper", "🌍", "Engine 2: Piper Multi-Lingual Package", "~120 MB",
-            "Ultra-low CPU memory footprint, instant generation, multi-speaker support across 6+ languages.",
+            "piper", "🌍", "International Solo Voice Collection", "~120 MB",
+            "Ultra-low memory footprint, instant speech generation, and diverse regional narrators across 6+ languages.",
             recommended=False, checked=True
         )
         self.card_piper.toggled.connect(self._update_total_size)
         lay.addWidget(self.card_piper)
 
         self.card_f5 = ModelSelectCard(
-            "f5_tts", "🧬", "Engine 3: F5-TTS Voice Cloning Package", "~1.2 GB",
-            "Flow-matching diffusion zero-shot voice cloning model. Clones vocal characteristics from 5-15s audio samples.",
+            "f5_tts", "🧬", "Zero-Shot Neural Voice Cloning Package", "~1.2 GB",
+            "Deep learning acoustic model enabling 1-click voice cloning from any reference audio sample.",
             recommended=False, checked=False
         )
         self.card_f5.toggled.connect(self._update_total_size)
@@ -659,7 +659,7 @@ class SetupWizardDialog(QDialog):
         t_info.setSpacing(1)
         lbl_t_title = QLabel("Run Audio Verification Test")
         lbl_t_title.setStyleSheet("font-size: 13px; font-weight: 700; color: #ffffff; background: transparent; border: none;")
-        lbl_t_sub = QLabel("Synthesize a quick 2-second voice sample to test the local engine.")
+        lbl_t_sub = QLabel("Synthesize a quick 2-second voice sample to test the local voice studio.")
         lbl_t_sub.setStyleSheet("font-size: 11px; color: #94a3b8; background: transparent; border: none;")
         t_info.addWidget(lbl_t_title)
         t_info.addWidget(lbl_t_sub)
@@ -684,7 +684,7 @@ class SetupWizardDialog(QDialog):
         lbl_s_icon.setStyleSheet("font-size: 18px; background: transparent; border: none;")
         cr_lay.addWidget(lbl_s_icon)
 
-        lbl_s_desc = QLabel("<b>VoxCraft Studio v1.0.0</b> • Developed by <b>Shahid</b> • 100% Offline Multi-Engine AI Speech Studio")
+        lbl_s_desc = QLabel("<b>VoxCraft Studio v1.0.0</b> • Developed by <b>Shahid</b> • 100% Offline AI Speech Studio")
         lbl_s_desc.setStyleSheet("color: #c4b5fd; font-size: 12px; background: transparent; border: none;")
         cr_lay.addWidget(lbl_s_desc, stretch=1)
         lay.addWidget(cred_card)
@@ -711,9 +711,9 @@ class SetupWizardDialog(QDialog):
         headers = [
             ("Welcome to VoxCraft Studio", "Configure your local neural speech studio for 100% offline generation."),
             ("Hardware & Acceleration Diagnostics", "Inspecting CPU, GPU, VRAM, and DirectML capabilities on your system."),
-            ("Select Neural Voice Models", "Choose the speech synthesis models you wish to download and register locally."),
-            ("Downloading & Verifying Models", "Downloading neural weights and verifying SHA256 integrity checksums."),
-            ("Setup Complete & Ready", "Your local speech generation engine is fully verified and ready to launch."),
+            ("Select Voice Packages", "Choose the voice packages you wish to download and register locally."),
+            ("Downloading & Verifying Packages", "Downloading voice packages and verifying local storage."),
+            ("Setup Complete & Ready", "Your local speech generation studio is fully verified and ready to launch."),
         ]
         title, desc = headers[step_idx]
         self.step_title.setText(title)

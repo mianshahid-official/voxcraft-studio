@@ -42,7 +42,7 @@ class ProjectsView(QWidget):
 
         self.table = QTableWidget()
         self.table.setColumnCount(4)
-        self.table.setHorizontalHeaderLabels(["Project Name", "Engine", "Word Count", "Type"])
+        self.table.setHorizontalHeaderLabels(["Project Name", "Voice / Mode", "Word Count", "Type"])
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         c_lay.addWidget(self.table, stretch=1)
 
@@ -54,7 +54,7 @@ class ProjectsView(QWidget):
         self.table.setRowCount(len(projects))
         for r, p in enumerate(projects):
             self.table.setItem(r, 0, QTableWidgetItem(p.get("name", "Untitled")))
-            self.table.setItem(r, 1, QTableWidgetItem(p.get("engine", "kokoro").upper()))
+            self.table.setItem(r, 1, QTableWidgetItem(p.get("voice", "Studio Voice").capitalize()))
             self.table.setItem(r, 2, QTableWidgetItem(str(p.get("word_count", 0))))
             self.table.setItem(r, 3, QTableWidgetItem(p.get("project_type", "tts").upper()))
 

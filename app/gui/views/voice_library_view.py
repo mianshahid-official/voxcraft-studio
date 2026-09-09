@@ -1,5 +1,5 @@
 """
-TTS Studio - PySide6 Voice Library & Explorer View
+VoxCraft Studio - PySide6 Voice Library & Explorer View
 """
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
@@ -27,7 +27,7 @@ class VoiceCardWidget(GlassCard):
         layout.setContentsMargins(14, 14, 14, 14)
         layout.setSpacing(8)
 
-        # Top row: Avatar + Name + Engine Badge
+        # Top row: Avatar + Name + Quality Badge
         top = QHBoxLayout()
         avatar = QLabel(v.get("avatar", "🎙️"))
         avatar.setStyleSheet("font-size: 24px; background: transparent; border: none;")
@@ -43,9 +43,13 @@ class VoiceCardWidget(GlassCard):
         top.addLayout(name_box, stretch=1)
 
         eng = v.get("engine", "kokoro")
-        eng_label = "ENGINE 1" if eng == "kokoro" else ("ENGINE 2" if eng == "piper" else "ENGINE 3")
-        eng_badge = StatusBadge(eng_label, "gpu" if eng in ("kokoro", "f5_tts") else "cpu")
-        top.addWidget(eng_badge)
+        if eng == "kokoro":
+            badge = StatusBadge("⭐ Studio HD", "gpu")
+        elif eng == "f5_tts":
+            badge = StatusBadge("🧬 Cloned", "gpu")
+        else:
+            badge = StatusBadge("🎙️ Narrator", "cpu")
+        top.addWidget(badge)
         layout.addLayout(top)
 
         # Sample preview sentence
@@ -95,10 +99,10 @@ class VoiceLibraryView(QWidget):
         self.search_box.textChanged.connect(self._render_grid)
         f_lay.addWidget(self.search_box, stretch=2)
 
-        self.combo_eng = QComboBox()
-        self.combo_eng.addItems(["All Engines", "Engine 1: Kokoro-82M", "Engine 2: Piper Neural", "Engine 3: F5-TTS"])
-        self.combo_eng.currentIndexChanged.connect(self._render_grid)
-        f_lay.addWidget(self.combo_eng)
+        self.combo_type = QComboBox()
+        self.combo_type.addItems(["All Voice Types", "⭐ Studio HD Voices", "🎙️ Narrator Voices", "🧬 Cloned Voices"])
+        self.combo_type.currentIndexChanged.connect(self._render_grid)
+        f_lay.addWidget(self.combo_type)
 
         self.combo_gen = QComboBox()
         self.combo_gen.addItems(["All Genders", "Female", "Male"])
@@ -106,7 +110,9 @@ class VoiceLibraryView(QWidget):
         f_lay.addWidget(self.combo_gen)
 
         self.combo_lang = QComboBox()
-        self.combo_lang.addItems(["All Languages", "English", "British English", "Spanish", "French", "German", "Italian", "Portuguese"])
+        self.combo_lang.addItem("All Languages")
+        for lang in VoiceCatalog.get_languages():
+            self.combo_lang.addItem(lang)
         self.combo_lang.currentIndexChanged.connect(self._render_grid)
         f_lay.addWidget(self.combo_lang)
 
@@ -133,13 +139,13 @@ class VoiceLibraryView(QWidget):
             if item.widget():
                 item.widget().deleteLater()
 
-        eng_map = {0: "all", 1: "kokoro", 2: "piper", 3: "f5_tts"}
-        cur_eng = eng_map.get(self.combo_eng.currentIndex(), "all")
+        type_map = {0: "all", 1: "kokoro", 2: "piper", 3: "f5_tts"}
+        cur_type = type_map.get(self.combo_type.currentIndex(), "all")
         cur_gen = "all" if self.combo_gen.currentIndex() == 0 else ("female" if self.combo_gen.currentIndex() == 1 else "male")
         cur_lang = "all" if self.combo_lang.currentIndex() == 0 else self.combo_lang.currentText()
         query = self.search_box.text().strip()
 
-        filtered = VoiceCatalog.filter(engine=cur_eng, gender=cur_gen, language=cur_lang, query=query)
+        filtered = VoiceCatalog.filter(engine=cur_type, gender=cur_gen, language=cur_lang, query=query)
 
         cols = 3
         for idx, v in enumerate(filtered):
@@ -152,6 +158,15 @@ class VoiceLibraryView(QWidget):
         v = VoiceCatalog.get_by_id(voice_id)
         if not v:
             return
+
+        installed, manifest_key = VoiceCatalog.is_model_installed(voice_id)
+        if not installed:
+            from ..widgets.download_dialog import ModelDownloadDialog
+            from PySide6.QtWidgets import QDialog
+            dlg = ModelDownloadDialog(voice_meta=v, manifest_key=manifest_key, parent=self)
+            if dlg.exec() != QDialog.Accepted:
+                return
+
         sample_text = v.get("sample", "Welcome to offline speech synthesis with VoxCraft Studio.")
         res = TTSService.synthesize_text(sample_text, voice=voice_id, engine_hint=engine)
         if res.success and res.audio_path:

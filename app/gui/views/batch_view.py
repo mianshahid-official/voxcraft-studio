@@ -55,7 +55,7 @@ class BatchView(QWidget):
         # Table
         self.table = QTableWidget()
         self.table.setColumnCount(5)
-        self.table.setHorizontalHeaderLabels(["Filename", "Engine", "Voice", "Status", "Duration"])
+        self.table.setHorizontalHeaderLabels(["Filename", "Voice", "Format", "Status", "Duration"])
         self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.table.setStyleSheet("""
             QTableWidget {
@@ -111,8 +111,8 @@ class BatchView(QWidget):
         self.table.setRowCount(len(jobs))
         for r, j in enumerate(jobs):
             self.table.setItem(r, 0, QTableWidgetItem(j["input_file"]))
-            self.table.setItem(r, 1, QTableWidgetItem(j["engine"].upper()))
-            self.table.setItem(r, 2, QTableWidgetItem(j["voice"]))
+            self.table.setItem(r, 1, QTableWidgetItem(j.get("voice", "Bella (US English)")))
+            self.table.setItem(r, 2, QTableWidgetItem("WAV (24kHz)"))
             
             st_item = QTableWidgetItem(j["status"].capitalize())
             if j["status"] == "completed":

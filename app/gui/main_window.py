@@ -26,7 +26,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self, check_first_run: bool = True):
         super().__init__()
-        self.setWindowTitle("VoxCraft Studio — Offline Neural TTS & Podcast Engine")
+        self.setWindowTitle("VoxCraft Studio — Offline Neural AI Speech & Voice Studio")
         self.resize(1300, 850)
         self.setMinimumSize(1080, 700)
 
@@ -101,7 +101,7 @@ class MainWindow(QMainWindow):
             ("📦 Batch Processing", 2),
             ("🎭 Voice Library", 3),
             ("🧬 Voice Cloning", 4),
-            ("📦 Model Hub", 5),
+            ("📦 Voice Packages", 5),
             ("⚙️ Settings", 6)
         ]
 

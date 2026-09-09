@@ -1,19 +1,24 @@
 """
-TTS Studio - Download Manifest & Model Metadata Registry
+VoxCraft Studio - Offline Voice Package Manifest & Metadata Registry
+Defines voice packages, language packs, download endpoints, and storage requirements.
 """
 from pathlib import Path
 from .paths import KOKORO_DIR, PIPER_DIR, F5TTS_DIR
 
 MODEL_REGISTRY_MANIFEST = {
     # -------------------------------------------------------------
-    # Kokoro-82M ONNX Package
+    # Studio Multi-Lingual Core Package (28 Voices)
     # -------------------------------------------------------------
     "kokoro-v0_19": {
         "engine": "kokoro",
-        "name": "Engine 1: Kokoro-82M Studio Package (24kHz)",
-        "version": "0.19",
-        "description": "High-fidelity, ultra-fast 24kHz neural speech model with English, Spanish, French, Japanese, Mandarin voices",
-        "size_mb": 310,
+        "name": "Studio Multi-Lingual Voice Pack (28 Voices)",
+        "version": "1.0",
+        "category": "Studio High-Fidelity (24kHz)",
+        "language": "Multi-Lingual (US, Hindi, Spanish, French)",
+        "flag": "✨",
+        "voice_count": 28,
+        "description": "Premium 24kHz ultra-HD neural voices featuring 28 expressive characters across US English, Hindi, Spanish, and French with dynamic multi-voice blending.",
+        "size_mb": 325,
         "recommended": True,
         "files": [
             {
@@ -27,38 +32,30 @@ MODEL_REGISTRY_MANIFEST = {
                 ]
             },
             {
-                "filename": "voices.bin",
+                "filename": "voices-v1.0.bin",
                 "target_dir": KOKORO_DIR,
-                "size_mb": 28,
+                "size_mb": 14,
                 "sha256": None,
                 "urls": [
-                    "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.bin",
+                    "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin",
                     "https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices.bin"
-                ]
-            },
-            {
-                "filename": "voices.json",
-                "target_dir": KOKORO_DIR,
-                "size_mb": 1,
-                "sha256": None,
-                "urls": [
-                    "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files/voices.json",
-                    "https://huggingface.co/hexgrad/Kokoro-82M/resolve/main/voices.json"
                 ]
             }
         ]
     },
 
     # -------------------------------------------------------------
-    # Piper Neural Voice Packs
+    # Offline Voice Packages
     # -------------------------------------------------------------
     "piper-en_US-lessac-medium": {
         "engine": "piper",
-        "name": "Engine 2: Piper English — Lessac",
+        "name": "US English Narrator — Lessac",
         "version": "1.0",
-        "language": "English",
+        "category": "Solo Narrator",
+        "language": "US English",
         "flag": "🇺🇸",
-        "description": "Crisp, balanced American English female voice optimized for audiobooks & narration",
+        "voice_count": 1,
+        "description": "Crisp, balanced American English female narration voice crafted for audiobooks, long-form reading, and clear tutorials.",
         "size_mb": 58,
         "recommended": True,
         "files": [
@@ -84,11 +81,13 @@ MODEL_REGISTRY_MANIFEST = {
     },
     "piper-en_US-libritts_r-medium": {
         "engine": "piper",
-        "name": "Engine 2: Piper English — LibriTTS Multi-Speaker",
+        "name": "US English Studio Broadcaster — LibriTTS",
         "version": "1.0",
-        "language": "English",
+        "category": "Multi-Speaker Cast",
+        "language": "US English",
         "flag": "🎧",
-        "description": "Studio multi-speaker pack containing 900+ distinct speaker voices",
+        "voice_count": 900,
+        "description": "Extensive studio broadcast voice collection featuring diverse tonal registers and character variations.",
         "size_mb": 65,
         "recommended": False,
         "files": [
@@ -114,11 +113,13 @@ MODEL_REGISTRY_MANIFEST = {
     },
     "piper-en_GB-alan-medium": {
         "engine": "piper",
-        "name": "Engine 2: Piper British English — Alan",
+        "name": "British English Narrator — Alan",
         "version": "1.0",
+        "category": "Solo Narrator",
         "language": "British English",
         "flag": "🇬🇧",
-        "description": "Refined British gentleman voice for history and storytelling",
+        "voice_count": 1,
+        "description": "Rich, authoritative British gentleman narrator voice with distinguished articulation for documentaries and stories.",
         "size_mb": 60,
         "recommended": False,
         "files": [
@@ -144,11 +145,13 @@ MODEL_REGISTRY_MANIFEST = {
     },
     "piper-es_ES-davefx-medium": {
         "engine": "piper",
-        "name": "Engine 2: Piper Spanish — DaveFX",
+        "name": "Spanish Castilian Voice — Dave",
         "version": "1.0",
+        "category": "Solo Narrator",
         "language": "Spanish",
         "flag": "🇪🇸",
-        "description": "Natural Castilian Spanish neutral narrator voice",
+        "voice_count": 1,
+        "description": "Natural European Spanish male voice with energetic cadence and clean pronunciation for media and dubbing.",
         "size_mb": 62,
         "recommended": False,
         "files": [
@@ -174,11 +177,13 @@ MODEL_REGISTRY_MANIFEST = {
     },
     "piper-fr_FR-siwis-medium": {
         "engine": "piper",
-        "name": "Engine 2: Piper French — Siwis",
+        "name": "French Parisian Voice — Siwis",
         "version": "1.0",
+        "category": "Solo Narrator",
         "language": "French",
         "flag": "🇫🇷",
-        "description": "Smooth, articulate Parisian French female voice",
+        "voice_count": 1,
+        "description": "Smooth, eloquent Parisian French female voice with refined cadence for audiobooks and e-learning.",
         "size_mb": 64,
         "recommended": False,
         "files": [
@@ -204,11 +209,13 @@ MODEL_REGISTRY_MANIFEST = {
     },
     "piper-de_DE-thorsten-medium": {
         "engine": "piper",
-        "name": "Engine 2: Piper German — Thorsten",
+        "name": "German Professional Voice — Thorsten",
         "version": "1.0",
+        "category": "Solo Narrator",
         "language": "German",
         "flag": "🇩🇪",
-        "description": "High clarity German male speech for podcasts and audiobooks",
+        "voice_count": 1,
+        "description": "Deep, articulate Standard German male voice designed for technical presentations and audio narration.",
         "size_mb": 61,
         "recommended": False,
         "files": [
@@ -234,11 +241,13 @@ MODEL_REGISTRY_MANIFEST = {
     },
     "piper-it_IT-paola-medium": {
         "engine": "piper",
-        "name": "Engine 2: Piper Italian — Paola",
+        "name": "Italian Expressive Voice — Paola",
         "version": "1.0",
+        "category": "Solo Narrator",
         "language": "Italian",
         "flag": "🇮🇹",
-        "description": "Warm, expressive Italian narrator voice",
+        "voice_count": 1,
+        "description": "Warm, expressive Italian female voice crafted for dialogue, storytelling, and podcast productions.",
         "size_mb": 60,
         "recommended": False,
         "files": [
@@ -264,11 +273,13 @@ MODEL_REGISTRY_MANIFEST = {
     },
     "piper-pt_BR-faber-medium": {
         "engine": "piper",
-        "name": "Engine 2: Piper Portuguese — Faber",
+        "name": "Portuguese Brazilian Voice — Faber",
         "version": "1.0",
+        "category": "Solo Narrator",
         "language": "Portuguese",
         "flag": "🇧🇷",
-        "description": "Brazilian Portuguese clear neural voice model",
+        "voice_count": 1,
+        "description": "Clear Brazilian Portuguese narrator voice with natural intonation and balanced rhythm.",
         "size_mb": 63,
         "recommended": False,
         "files": [
@@ -294,15 +305,17 @@ MODEL_REGISTRY_MANIFEST = {
     },
 
     # -------------------------------------------------------------
-    # F5-TTS Flow Matching Diffusion Voice Cloning Model
+    # Zero-Shot Voice Cloning System Package
     # -------------------------------------------------------------
     "f5-tts-base": {
         "engine": "f5_tts",
-        "name": "Engine 3: F5-TTS Zero-Shot Voice Cloning Model",
+        "name": "Neural Voice Cloning Package",
         "version": "1.0",
-        "language": "Multi-Lingual",
+        "category": "Voice Cloning",
+        "language": "Multi-Lingual Universal",
         "flag": "🧬",
-        "description": "Diffusion-based zero-shot voice cloning model (GPU recommended for realtime inference)",
+        "voice_count": 1,
+        "description": "Advanced acoustic flow-matching neural package enabling instant 1-click voice cloning from any reference audio clip.",
         "size_mb": 1250,
         "recommended": False,
         "files": [

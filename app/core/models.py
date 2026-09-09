@@ -33,6 +33,8 @@ class ModelStatus:
     progress_pct: float
     speed_mbps: float
     eta_seconds: int
+    category: str = "Voice Package"
+    voice_count: int = 1
     language: str = "English"
     flag: str = "🎙️"
     downloaded_mb: float = 0.0
@@ -70,6 +72,8 @@ class ModelManager:
                 name=meta["name"],
                 version=meta.get("version", "1.0"),
                 description=meta.get("description", ""),
+                category=meta.get("category", "Voice Package"),
+                voice_count=meta.get("voice_count", 1),
                 size_mb=meta["size_mb"],
                 is_installed=all_present,
                 is_downloading=is_dl,

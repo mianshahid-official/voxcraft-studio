@@ -75,11 +75,11 @@ class AboutView(QWidget):
         # Technical Info
         info = (
             "VoxCraft Studio is designed for 100% private, local, offline artificial intelligence speech generation.\n\n"
-            "Integrated Neural Engines & Models:\n"
-            "• Kokoro-82M (Apache 2.0 / High-Quality ONNX 24kHz Speech)\n"
-            "• Piper Neural TTS (MIT License / Ultra-Fast Multi-Lingual CPU Engine)\n"
-            "• F5-TTS Flow Matching Diffusion (MIT License / Zero-Shot Voice Cloning)\n\n"
-            "Built with PySide6 (Qt for Python), ONNX Runtime, and PyAudio/DSP audio pipelines."
+            "Offline Voice Architecture & Capabilities:\n"
+            "• Studio High-Fidelity 24kHz Neural Synthesis (28 Multi-Lingual Voices with dynamic blending)\n"
+            "• International Fast Speech Stack (Instant generation across English, Spanish, French, German, and Hindi)\n"
+            "• Zero-Shot Neural Voice Cloning (Acoustic matching from short reference audio clips)\n\n"
+            "Built with PySide6 (Qt for Python), ONNX Runtime with DirectML/CUDA GPU acceleration, and PyAudio/SoundFile DSP pipelines."
         )
         lbl_info = QLabel(info)
         lbl_info.setStyleSheet("color: #cbd5e1; font-size: 13px; line-height: 1.6; background: transparent; border: none;")

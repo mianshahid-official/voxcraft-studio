@@ -34,6 +34,8 @@ desktop.ini
 *.bin
 *.pt
 *.pth
+*.npz
+*.npy
 
 # Generated Audio Exports, Cache, and Runtime Logs
 exports/*

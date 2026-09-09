@@ -148,6 +148,29 @@ QPushButton.PrimaryBtn:disabled {
     color: #64748b;
 }
 
+QPushButton#BottomAudioPlayBtn,
+QPushButton#BottomAudioPlayBtn:focus,
+QPushButton#BottomAudioPlayBtn:active {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #8b5cf6, stop:1 #7c3aed);
+    color: #ffffff;
+    border: none;
+    outline: none;
+}
+
+QPushButton#BottomAudioPlayBtn:hover {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #9333ea, stop:1 #6b21a8);
+    color: #ffffff;
+    border: none;
+    outline: none;
+}
+
+QPushButton#BottomAudioPlayBtn:pressed {
+    background-color: #6d28d9;
+    color: #ffffff;
+    border: none;
+    outline: none;
+}
+
 QPushButton.SecondaryBtn {
     background-color: rgba(255, 255, 255, 0.05);
     color: #cbd5e1;

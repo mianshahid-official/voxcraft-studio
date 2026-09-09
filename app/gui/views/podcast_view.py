@@ -54,7 +54,7 @@ class SpeakerConfigCard(GlassCard):
         layout.setContentsMargins(14, 12, 14, 12)
         layout.setSpacing(10)
 
-        # Top Row: Avatar + Name Edit + Engine + Delete
+        # Top Row: Avatar + Name Edit + Delete
         top_row = QHBoxLayout()
         top_row.setSpacing(8)
 
@@ -66,15 +66,7 @@ class SpeakerConfigCard(GlassCard):
         self.name_edit.setPlaceholderText("Speaker Name (e.g. Alex)")
         self.name_edit.setStyleSheet("font-weight: 700; font-size: 13px; padding: 5px 8px;")
         self.name_edit.textChanged.connect(self._on_name_changed)
-        top_row.addWidget(self.name_edit, stretch=2)
-
-        self.engine_combo = QComboBox()
-        self.engine_combo.addItems(["All Engines", "Engine 1: Kokoro-82M", "Engine 2: Piper Neural", "Engine 3: F5-TTS"])
-        eng = self.speaker.get("engine", "kokoro")
-        eng_idx = 1 if eng == "kokoro" else (2 if eng == "piper" else (3 if eng == "f5_tts" else 0))
-        self.engine_combo.setCurrentIndex(eng_idx)
-        self.engine_combo.currentIndexChanged.connect(self._on_engine_changed)
-        top_row.addWidget(self.engine_combo, stretch=2)
+        top_row.addWidget(self.name_edit, stretch=1)
 
         self.btn_del = QPushButton("✕")
         self.btn_del.setToolTip("Remove Speaker")
@@ -119,31 +111,23 @@ class SpeakerConfigCard(GlassCard):
         self.voice_combo.blockSignals(True)
         self.voice_combo.clear()
 
-        eng_idx = self.engine_combo.currentIndex()
-        cur_eng = {1: "kokoro", 2: "piper", 3: "f5_tts"}.get(eng_idx, "all")
         all_v = VoiceCatalog.get_all()
-        filtered = [v for v in all_v if cur_eng == "all" or v.get("engine") == cur_eng]
-
         target_voice = self.speaker.get("voice", "")
         selected_idx = 0
 
-        for idx, v in enumerate(filtered):
-            self.voice_combo.addItem(VoiceCatalog.format_label(v, include_engine=True), v.get("id"))
+        for idx, v in enumerate(all_v):
+            self.voice_combo.addItem(VoiceCatalog.format_label(v), v.get("id"))
             if v.get("id") == target_voice:
                 selected_idx = idx
 
-        if filtered:
+        if all_v:
             self.voice_combo.setCurrentIndex(selected_idx)
             self.speaker["voice"] = self.voice_combo.currentData()
+            v_meta = VoiceCatalog.get_by_id(self.speaker["voice"])
+            if v_meta and "engine" in v_meta:
+                self.speaker["engine"] = v_meta["engine"]
 
         self.voice_combo.blockSignals(False)
-
-    def _on_engine_changed(self, idx: int):
-        cur_eng = {1: "kokoro", 2: "piper", 3: "f5_tts"}.get(idx, "all")
-        if cur_eng != "all":
-            self.speaker["engine"] = cur_eng
-        self._populate_voices()
-        self.speakerChanged.emit()
 
     def _on_voice_changed(self, idx: int):
         vid = self.voice_combo.currentData()
@@ -170,11 +154,14 @@ class SpeakerConfigCard(GlassCard):
         self.speaker["volume"] = val
 
     def get_data(self) -> Dict[str, Any]:
+        vid = self.voice_combo.currentData() or "af_bella"
+        v_meta = VoiceCatalog.get_by_id(vid)
+        eng = v_meta.get("engine", "kokoro") if v_meta else "kokoro"
         return {
             "id": self.speaker.get("id", "speaker"),
             "name": self.name_edit.text().strip() or "Speaker",
-            "engine": "kokoro" if self.engine_combo.currentIndex() == 0 else ("piper" if self.engine_combo.currentIndex() == 1 else "f5_tts"),
-            "voice": self.voice_combo.currentData() or "af_bella",
+            "engine": eng,
+            "voice": vid,
             "speed": self.speed_slider.value(),
             "pitch": self.pitch_slider.value(),
             "volume": self.vol_slider.value(),

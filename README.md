@@ -1,24 +1,18 @@
-# 🎙️ VoxCraft Studio — Offline Neural TTS & Podcast Desktop Studio
+# 🎙️ VoxCraft Studio — Offline AI Speech & Podcast Studio
 
 <div align="center">
 
 ![VoxCraft Studio App Icon](app/resources/icons/app_icon.png)
 
-### **Production-Grade, 100% Offline Multi-Engine Text-to-Speech & Podcast Studio for Windows**
+### **Production-Grade, 100% Offline AI Speech Synthesis & Podcast Studio for Windows**
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![PySide6 / Qt](https://img.shields.io/badge/GUI-PySide6%20%2F%20Qt-41CD52?style=for-the-badge&logo=qt&logoColor=white)](https://www.qt.io/)
+[![PySide6 / Qt](https://img.shields.io/badge/GUI-PySide6%20%2F%20Qt6-41CD52?style=for-the-badge&logo=qt&logoColor=white)](https://www.qt.io/)
 [![ONNX Runtime](https://img.shields.io/badge/Inference-ONNX%20%2F%20DirectML%20%2F%20CUDA-005CED?style=for-the-badge)](https://onnxruntime.ai/)
 [![Offline First](https://img.shields.io/badge/Privacy-100%25%20Offline%20Local-10B981?style=for-the-badge)](https://github.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
 
-**Developed by Shahid**
-
-</div>
-
-<div align="center">
-
-![VoxCraft Studio UI Preview](docs/screenshots/app_preview.png)
+**Architected & Developed by Shahid**
 
 </div>
 
@@ -26,193 +20,136 @@
 
 ## 🌟 Highlights
 
-**VoxCraft Studio** brings studio-grade neural speech synthesis directly to your Windows desktop. Designed for privacy, speed, and creative freedom, VoxCraft Studio operates **100% locally with zero cloud latency and no internet connection required**.
-
-### ⚡ 3 Integrated Offline Neural Speech Engines:
-1. **Engine 1 (Kokoro-82M ONNX)**:
-   - Ultra-fast 24kHz studio-quality voice generation.
-   - Dual-Voice Blending vector matrix (mix two distinct voice styles with customizable blend ratios).
-2. **Engine 2 (Piper Neural Multi-Lingual)**:
-   - Extremely lightweight, low-latency CPU speech synthesis.
-   - Multi-lingual neural models: English, British English, Spanish, French, German, Italian, Portuguese, and more.
-3. **Engine 3 (F5-TTS Flow Matching Diffusion)**:
-   - Zero-shot neural voice cloning from short 5–15s reference audio samples.
-   - Built-in studio presets for narration and broadcast speech.
+**VoxCraft Studio** brings high-fidelity neural speech synthesis and multi-speaker podcast generation directly to your Windows desktop. Built for creators, developers, and privacy-conscious users, VoxCraft Studio operates **100% locally on your machine with zero cloud latency, zero telemetry, and no active internet connection required during generation**.
 
 ---
 
-## 🚀 Key Features
+## 🚀 Key Features & Studio Workspaces
 
-- 🔒 **100% Offline Privacy**: Zero telemetry, zero cloud APIs, zero subscription fees.
-- 📁 **Automated Per-Conversion Export Folders**: As soon as speech processing completes, audio, full text, and narration timestamps are saved into a dedicated folder named with the first few words of the text + timestamp (e.g. `exports/A_desperate_tribe_of_Glimmer-Foxes_2026-09-08_08-49-35/`).
-- ⏱️ **Exact Word-Level & Millisecond-Level Narration Timestamps**: Outputs precise word-level timing JSON files matching video synchronization standards.
-- ⚡ **Intelligent Acceleration**: Automatic hardware detection for **NVIDIA CUDA** and **Windows DirectML**, with optimized multi-threaded CPU fallback.
-- 📻 **Podcast Studio**: Multi-speaker conversation writer (Host, Guest, Narrator) with per-speaker voice, rate, pitch, and volume controls.
-- 📦 **Batch File Narration**: Queue multiple text files (`.txt`, `.md`) for bulk speech conversion with real-time status tracking.
-- 🎭 **Voice Library Explorer**: Browse and search voice models with instant audio sample previews.
-- 🌐 **Multi-Language Selector**: Filter voices and languages with a single click.
-- 📦 **In-App Model Hub**: Download and manage additional international language packages directly inside the desktop app.
-- 🎛️ **Live Audio HUD**: Waveform playback bar with seekable scrubber, volume slider, playback speed controls, and WAV/MP3 export.
+### 1. ⚡ Studio Text-to-Speech (TTS)
+- **Ultra-HD Voice Synthesis**: 24kHz neural speech generation across American English, British English, Hindi, Spanish, and French.
+- **Dual-Voice Blending Matrix**: Create unique hybrid vocal identities by blending two voice vectors with real-time ratio sliders.
+- **Audio Modulation**: Real-time sliders for Pitch adjustment (`-6st` to `+6st`), Speed/Rate (`0.5x` to `2.0x`), and Volume dynamics.
+- **File Importer & Quick Prompts**: Instant import of `.txt` / `.md` scripts with multi-lingual greeting templates.
+
+### 2. 📻 Podcast Studio (Multi-Speaker Dialogue Engine)
+- **Multi-Cast Workflow**: Configure conversation casts (e.g. Host, Guest, Narrator, Expert) with customizable avatars, colors, and distinct voices.
+- **Syntax-Assisted Script Editor**: Seamlessly tag dialogue lines per speaker with one-click speaker tag insertion.
+- **Full Episode Assembly**: Generates stitched, production-ready audio dialogue files with natural conversation pacing.
+
+### 3. 📦 Batch Processing Queue
+- **High-Throughput Queue**: Add hundreds of `.txt` or `.md` files for background batch conversion.
+- **Live Progress & Status HUD**: Real-time duration trackers, success/fail diagnostics, and direct output folder links.
+
+### 4. 🎭 Voice Library Explorer
+- **Visual Voice Browser**: Browse curated voice cards with character descriptions, gender, style, and regional accents.
+- **Instant Previews**: 1-click audio sample preview generation.
+- **Categorized Filters**: Filter by *Studio Ultra-HD*, *Solo Narrators*, and *Cloned Voices*.
+
+### 5. 🧬 Zero-Shot Voice Cloning
+- **Acoustic Flow-Matching**: Clone any speaker's vocal characteristics from a 5–15 second reference audio sample (`.wav`, `.mp3`).
+- **Local Audio Synthesis**: Generate new speech in the cloned voice without uploading audio to external servers.
+
+### 6. 📦 Offline Voice Packages & Storage Manager
+- **One-Click Voice Packages**: Manage and download high-fidelity voice packs directly inside the desktop app.
+- **Real-Time Download HUD**: Live download speed (MB/s), progress percentages, and ETA counters with background download capability.
+- **Zero Jargon**: Intuitive package titles, language flags, and storage indicators.
+
+### 7. 🎛️ Interactive Waveform Audio Player
+- **Real-Time Waveform Visualizer**: Scrub, seek, and inspect audio dynamics visually.
+- **Custom Play/Pause Engine**: Crisp vector controls built for seamless playback and looping.
+- **Format Exporter**: Save synthesized audio as `.wav`, `.mp3`, or `.flac`.
 
 ---
 
-## 📂 Export Folder & Narration Timestamp Structure
+## 📂 Automatic Production Export Organization
 
-Every time you generate speech, VoxCraft Studio automatically creates a dedicated folder in `exports/` containing:
+Every synthesis run automatically packages all assets into a dedicated folder in `exports/`:
 
 ```
-exports/A_desperate_tribe_of_Glimmer-Foxes_2026-09-08_08-49-35/
-├── A_desperate_tribe_of_Glimmer-Foxes_2026-09-08_08-49-35.wav      # Studio-quality synthesized audio
-├── A_desperate_tribe_of_Glimmer-Foxes_2026-09-08_08-49-35.txt      # Full original text input
-├── A_desperate_tribe_of_Glimmer-Foxes_2026-09-08_08-49-35.json     # Exact word-level narration timestamps
-├── A_desperate_tribe_of_Glimmer-Foxes_2026-09-08_08-49-35.srt      # SubRip subtitle file for video editors
-└── A_desperate_tribe_of_Glimmer-Foxes_2026-09-08_08-49-35.vtt      # WebVTT subtitle file
-```
-
-### Narration Timestamp JSON Format:
-```json
-{
-  "text": "A desperate tribe of Glimmer-Foxes, their fur dulled by the blight that consumed their ancient forests...",
-  "duration_seconds": 95.99,
-  "words": [
-    {
-      "word": "A",
-      "start": 0.08,
-      "end": 0.22
-    },
-    {
-      "word": "desperate",
-      "start": 0.32,
-      "end": 0.82
-    },
-    {
-      "word": "tribe",
-      "start": 0.92,
-      "end": 1.212
-    },
-    {
-      "word": "of",
-      "start": 1.312,
-      "end": 1.476
-    },
-    {
-      "word": "Glimmer-Foxes,",
-      "start": 1.576,
-      "end": 2.148
-    }
-  ]
-}
+exports/A_desperate_tribe_of_Glimmer-Foxes_2026-09-09_12-30-00/
+├── audio.wav        # Studio 24kHz synthesized audio
+├── text.txt         # Original input text
+├── timestamps.json  # Word-level timing metadata
+├── subtitles.srt    # SubRip subtitles for video editing (Premiere, DaVinci, CapCut)
+└── subtitles.vtt    # WebVTT captions
 ```
 
 ---
 
-## 🛠️ Quick Start
+## 💻 System Requirements & Acceleration
 
-### Prerequisites
-- **Operating System**: Windows 10 / 11 (64-bit)
-- **Python**: Python 3.10, 3.11, or 3.12 ([Download from python.org](https://www.python.org/downloads/))  
-  *(Make sure to check "Add Python to PATH" during installation)*
-
-### 1. Clone the Repository
-```bash
-git clone https://github.com/mianshahid-official/voxcraft-studio.git
-cd voxcraft-studio
-```
-
-### 2. Install Dependencies (1-Click Installer)
-Double-click `install.bat` or run:
-```bash
-# Windows Command Prompt / PowerShell
-install.bat
-```
-Or install via pip manually:
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Launch Application
-Double-click `run.bat` or run:
-```bash
-# Option A: 1-Click launcher
-run.bat
-
-# Option B: Python entrypoint
-python run.py
-
-# Option C: Web Studio mode (browser interface)
-python run.py --web
-```
+| Component | Minimum Specification | Recommended Specification |
+| :--- | :--- | :--- |
+| **OS** | Windows 10 / 11 (64-bit) | Windows 11 (64-bit) |
+| **Python** | Python 3.10 – 3.12 | Python 3.11 / 3.12 |
+| **RAM** | 8 GB | 16 GB+ |
+| **Storage** | 2 GB free disk space | 5 GB SSD storage |
+| **Acceleration** | AVX2 / FMA multi-threaded CPU | NVIDIA GPU (CUDA) or DirectML GPU |
 
 ---
 
-## 📦 First-Run Setup & Model Downloader Wizard
+## 🛠️ Quickstart & Installation
 
-When you first launch VoxCraft Studio, the built-in **Setup Wizard** automatically:
-1. Performs hardware diagnostics (CPU cores, RAM, GPU/DirectML support).
-2. Lets you choose your neural models (Kokoro-82M, Piper Multi-Lingual, F5-TTS).
-3. Downloads and verifies model weights with SHA256 integrity checksums.
-4. Synthesizes a test audio sample to verify your offline audio pipeline.
+### Option 1: One-Click Windows Launcher (Recommended)
 
-To run the Setup Wizard manually at any time:
-```bash
-python run.py --wizard
-```
+1. Clone or download the repository:
+   ```cmd
+   git clone https://github.com/mianshahid-official/voxcraft-studio.git
+   cd voxcraft-studio
+   ```
+2. Double-click **`install.bat`** to install dependencies and run the initial setup wizard.
+3. Double-click **`run.bat`** to launch VoxCraft Studio!
 
 ---
 
-## 📂 Project Structure
+### Option 2: Manual Python Setup
+
+1. **Create and activate a virtual environment (optional but recommended):**
+   ```cmd
+   python -m venv .venv
+   .venv\Scripts\activate
+   ```
+
+2. **Install dependencies:**
+   ```cmd
+   pip install -r requirements.txt
+   ```
+
+3. **Launch the Desktop Application:**
+   ```cmd
+   python run.py
+   ```
+
+---
+
+## 🏗️ Project Architecture
 
 ```
 voxcraft-studio/
 ├── app/
-│   ├── backend/              # Local ASGI server & REST/WebSocket bridge
-│   ├── config/               # Settings, paths, and download manifests
-│   ├── core/                 # Audio DSP, chunking, timestamps, hardware detection
-│   ├── engines/              # Engine implementations (Kokoro, Piper, F5-TTS)
-│   ├── frontend/             # Optional Web Studio frontend assets
-│   ├── gui/
-│   │   ├── views/            # PySide6 Studio views (TTS, Podcast, Batch, Voice Library, etc.)
-│   │   ├── widgets/          # Glassmorphism cards, sliders, audio player HUD
-│   │   ├── wizard/           # Setup & Model Installer Wizard
-│   │   └── theme.py          # Dark Studio glassmorphism design system
-│   ├── resources/            # App icons and graphics
-│   ├── services/             # TTS synthesis, podcast assembly, storage & cache
-│   ├── voices/               # Local voice catalog & language registry
-│   └── main.py               # Main application launcher
-├── data/
-│   └── reference_voices/     # Reference audio for voice cloning
-├── models/                   # Local offline neural model weights (downloaded via wizard)
-├── exports/                  # Auto-generated per-conversion export folders
-├── installer/                # Automated installer & environment wizard
-├── tests/                    # Pipeline verification test suite
-├── .gitignore                # Excludes large binaries, exports, and caches
-├── install.bat               # 1-Click Windows installer
-├── run.bat                   # 1-Click Windows launcher
-├── run.py                    # Root launcher entrypoint
-├── requirements.txt          # Python dependencies
-└── README.md                 # Complete documentation
+│   ├── backend/           # Configuration, download manager & storage services
+│   ├── config/            # Paths, settings & voice package manifests
+│   ├── core/              # Model lifecycle, project management & diagnostic tools
+│   ├── engines/           # Neural synthesis backends (Kokoro, Piper, F5-TTS)
+│   ├── gui/               # PySide6 Desktop GUI
+│   │   ├── views/         # Studio TTS, Podcast, Batch, Library, Voice Packages, Settings
+│   │   ├── widgets/       # Waveform player, download modals, sliders, cards
+│   │   └── wizard/        # Initial setup wizard & diagnostic tester
+│   ├── services/          # Synthesis, batch narration & podcast stitching pipelines
+│   └── voices/            # Voice catalog metadata & speaker embeddings
+├── models/                # Local offline neural model weights & voice packs
+├── exports/               # Automatically organized output audio & subtitle folders
+├── installer/             # Setup wizard scripts
+├── run.py                 # Primary application entrypoint
+├── install.bat            # 1-click Windows installer script
+├── run.bat                # 1-click Windows desktop launcher
+└── requirements.txt       # Python dependency manifest
 ```
 
 ---
 
-## 🧪 Running Automated Tests
+## 📄 License & Credits
 
-Run the test suite to verify offline neural synthesis, chunking, audio DSP, and UI instantiation:
-```bash
-python tests/test_engines.py
-python tests/test_pyside_pipeline.py
-```
-
----
-
-## 📜 License
-
-Distributed under the **MIT License**. See `LICENSE` for more information.
-
----
-
-<div align="center">
-
-**VoxCraft Studio** • Developed with ❤️ by **Shahid**
-
-</div>
+- **Architect & Lead Developer**: **Shahid**
+- **License**: Released under the **[MIT License](LICENSE)**. Free for personal and commercial use.
